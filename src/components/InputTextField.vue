@@ -10,8 +10,12 @@
         v-model="value"
         :pattern="pattern"
         :class="[whiteText ? 'white-text' : '']"
+        :style="inputStyle"
     />
-    <label :for="id">{{ label }}</label>
+    <label
+        :for="id"
+        :style="labelStyle"
+    >{{ label }}</label>
   </div>
 </template>
 
@@ -31,6 +35,8 @@ export default {
     ref: String,
     pattern: String,
     whiteText: Boolean,
+    inputStyle: String,
+    labelStyle: String,
   }
 }
 </script>

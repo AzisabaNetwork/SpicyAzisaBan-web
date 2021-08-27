@@ -1,5 +1,5 @@
 <template>
-  <NavWrapper :show-login-element="showLoginElement" :username="username">
+  <NavWrapper :logged-in="loggedIn" :username="username">
     <li><Link href="/" text="処罰履歴" /></li>
   </NavWrapper>
   <AccountMenu>
@@ -37,7 +37,7 @@ function toast(text: string) {
 }
 
 const username = ref("")
-const showLoginElement = ref(false)
+const loggedIn = ref(false)
 function refreshLoginStatus() {
   fetch(`${process.env.VUE_APP_API_URL}/i_users/me`, {
     headers: {
@@ -46,7 +46,7 @@ function refreshLoginStatus() {
   }).then(async res => {
     const data = await res.json()
     const isError = !!(res.status !== 200 || data['error'])
-    showLoginElement.value = isError
+    loggedIn.value = !isError
     if (isError) {
       if (data['error'] !== 'unauthorized') {
         toast('Unknown error fetching user data: ' + data['error'])
@@ -140,7 +140,7 @@ export default {
   },
   data() {
     return {
-      showLoginElement,
+      loggedIn,
       username,
     }
   },

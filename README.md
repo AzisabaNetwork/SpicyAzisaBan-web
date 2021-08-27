@@ -1,4 +1,4 @@
-# vue-test-app
+# SpicyAzisaBan-web
 
 ## Project setup
 ```

@@ -131,11 +131,13 @@ export default {
         }
         localStorage.setItem('spicyazisaban_session', res['state'])
         refreshLoginStatus()
+        location.reload()
         toast('You\'ve (probably) successfully logged in!')
       })
     },
     doLogout() {
       const session = localStorage.getItem("spicyazisaban_session")
+      if (!session) return
       fetch(`${process.env.VUE_APP_API_URL}/i_users/logout`, {
         method: 'POST',
         headers: {

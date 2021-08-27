@@ -10,8 +10,8 @@ export default {
   },
   setup() {
     setTimeout(() => {
-      // eslint-disable-next-line no-undef
-      M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), {
+      // @ts-expect-error
+      M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), { // eslint-disable-line no-undef
         coverTrigger: false,
         hover: true,
       })

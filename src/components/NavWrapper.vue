@@ -2,10 +2,10 @@
   <nav>
     <div class="nav-wrapper">
       <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-      <div class="hide-on-med-and-down" style="display: flex;" v-if="loggedIn">
+      <div class="hide-on-med-and-down" style="display: flex;">
         <div style="margin-left: 10%; margin-right: 10%;"></div>
-        <div style="margin: auto"></div>
-        <div style="justify-content: center; width: 30%;">
+        <div style="margin: auto" v-if="false && loggedIn"></div>
+        <div style="justify-content: center; width: 30%;" v-if="false && loggedIn">
           <InputTextField label="検索" id="search" ref="search" :white-text="true" input-style="border-bottom: 1px solid #26a69a" label-style="top: -5px" />
         </div>
         <div style="margin: auto"></div>

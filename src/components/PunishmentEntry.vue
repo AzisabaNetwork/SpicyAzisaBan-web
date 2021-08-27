@@ -49,8 +49,8 @@ export default {
         time -= m * 60000
       }
       if (time > 1000) {
-        m = Math.floor(time / 1000)
-        time -= m * 1000
+        s = Math.floor(time / 1000)
+        time -= s * 1000
       }
       let str = ''
       if (d !== 0) str += `${d}日`

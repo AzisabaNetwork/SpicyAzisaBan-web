@@ -6,15 +6,15 @@
     <li><Link href="/me" text="設定" /></li>
     <li><Link href="/logout" text="ログアウト" /></li>
   </AccountMenu>
-  <Modal id="login-modal">
+  <Modal id="login-modal" :dismissible="dismissibleLoginModal">
     <ModalContent title="ログイン / 登録">
       <InputTextField :min-length=5 type="email" label="メールアドレス" id="email" ref="email"/>
       <InputTextField :min-length=7 type="password" label="パスワード" id="password" ref="password"/>
       <InputTextField :min-length=6 :max-length=10 type="text" label="(ログイン時+有効化してる人のみ)2FAのコードもしくは復旧コード" id="2fa" ref="mfa_token"/>
     </ModalContent>
     <ModalFooter>
-      <Button color="orange darken-4" v-on:click="doRegister" text="アカウントを作成"/>
-      <Button color="green" v-on:click="doLogin" text="ログイン"/>
+      <Button color="orange darken-4" @click="doRegister" text="アカウントを作成"/>
+      <Button color="green" @click="doLogin" text="ログイン"/>
     </ModalFooter>
   </Modal>
 </template>
@@ -42,6 +42,7 @@ function refreshLoginStatus() {
   fetch(`${process.env.VUE_APP_API_URL}/i_users/me`, {
     headers: {
       'Accept': 'application/json',
+      'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
     },
   }).then(async res => {
     const data = await res.json()
@@ -58,6 +59,9 @@ function refreshLoginStatus() {
 }
 
 export default {
+  props: {
+    dismissibleLoginModal: Boolean,
+  },
   methods: {
     doRegister() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
@@ -106,6 +110,8 @@ export default {
           mfa_token: this.$refs.mfa_token.value,
         }),
       }).then(res => res.json()).then(res => {
+        // @ts-expect-error
+        M.Modal.getInstance(document.getElementById('login-modal')).close() // eslint-disable-line no-undef
         const err = res['error']
         if (err) {
           if (err === 'invalid_email_or_password') {
@@ -123,6 +129,7 @@ export default {
           }
           return
         }
+        localStorage.setItem('spicyazisaban_session', res['state'])
         refreshLoginStatus()
         toast('You\'ve (probably) successfully logged in!')
       })
@@ -150,7 +157,7 @@ export default {
 }
 
 setTimeout(() => {
-  // eslint-disable-next-line no-undef
-  M.AutoInit()
+  // @ts-ignore
+  M.AutoInit() // eslint-disable-line no-undef
 }, 100)
 </script>

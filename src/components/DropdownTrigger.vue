@@ -1,22 +1,21 @@
 <template>
-  <a class='dropdown-trigger' :data-target="target" @click="onClick()">{{ text }}</a>
+  <a class='dropdown-trigger' :data-target="target">{{ text }}</a>
 </template>
 
 <script lang="ts">
 export default {
-  methods: {
-    onClick() {
-      if (!this.$props.target) return
-      setTimeout(() => {
-        const el = document.getElementById(this.$props.target)
-        el.style.top = '64px'
-        el.style['border-radius'] = '0 0 20px 20px'
-      }, 1)
-    }
-  },
   props: {
     text: String,
     target: String,
+  },
+  setup() {
+    setTimeout(() => {
+      // eslint-disable-next-line no-undef
+      M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), {
+        coverTrigger: false,
+        hover: true,
+      })
+    }, 150)
   },
 }
 </script>
@@ -33,6 +32,7 @@ export default {
 <style>
 .dropdown-content {
   background-color: #22282a;
+  border-radius: 0 0 20px 20px;
 }
 
 .dropdown-content li>a, .dropdown-content li>span {

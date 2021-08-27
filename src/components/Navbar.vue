@@ -4,7 +4,7 @@
   </NavWrapper>
   <AccountMenu>
     <li><Link href="/me" text="設定" /></li>
-    <li><Link href="/logout" text="ログアウト" /></li>
+    <li><Link text="ログアウト" @click="doLogout()" /></li>
   </AccountMenu>
   <Modal id="login-modal" :dismissible="dismissibleLoginModal">
     <ModalContent title="ログイン / 登録">
@@ -132,6 +132,25 @@ export default {
         localStorage.setItem('spicyazisaban_session', res['state'])
         refreshLoginStatus()
         toast('You\'ve (probably) successfully logged in!')
+      })
+    },
+    doLogout() {
+      const session = localStorage.getItem("spicyazisaban_session")
+      fetch(`${process.env.VUE_APP_API_URL}/i_users/logout`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': session,
+        },
+      }).then(res => {
+        if (res.status === 200) {
+          localStorage.removeItem("spicyazisaban_session")
+          refreshLoginStatus()
+          toast('ログアウトしました。')
+        } else {
+          res.text().then(text => toast(text))
+        }
       })
     },
   },

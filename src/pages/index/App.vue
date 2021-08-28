@@ -14,6 +14,7 @@
           :unpunished="p.unpunished"
       />
     </PunishmentEntriesList>
+    <Button text="さらに取得" @click="fetchMore" :disabled="disableFetchMoreButton || !hasNext" />
   </Container>
 </template>
 
@@ -23,18 +24,43 @@ import Navbar from '@/components/Navbar.vue'
 import PunishmentEntriesList from "@/components/PunishmentEntriesList.vue"
 import PunishmentEntry from "@/components/PunishmentEntry.vue"
 import Container from "@/components/Container.vue"
+import Button from "@/components/Button.vue"
+
+const page = ref(0)
+const punishments = ref([])
+const hasNext = ref(false)
+const disableFetchMoreButton = ref(false)
 
 export default {
   components: {
+    Button,
     Container,
     PunishmentEntry,
     PunishmentEntriesList,
     Navbar,
   },
+  methods: {
+    fetchMore() {
+      if (!hasNext.value) return
+      disableFetchMoreButton.value = true
+      fetch(`${process.env.VUE_APP_API_URL}/punishments/list?page=${++page.value}`, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+        },
+      }).then(res => res.json()).then(res => {
+        if (res['error']) {
+          return
+        }
+        const data = res['data']
+        console.log(res)
+        hasNext.value = res['hasNext']
+        punishments.value = punishments.value.concat(data)
+      }).finally(() => disableFetchMoreButton.value = false)
+    }
+  },
   setup() {
-    const page = ref(0)
-    const punishments = ref([])
-    const hasNext = ref(false)
     fetch(`${process.env.VUE_APP_API_URL}/punishments/list?page=${page.value}`, {
       headers: {
         'Accept': 'application/json',
@@ -54,6 +80,7 @@ export default {
       page,
       punishments,
       hasNext,
+      disableFetchMoreButton,
     }
   },
 }

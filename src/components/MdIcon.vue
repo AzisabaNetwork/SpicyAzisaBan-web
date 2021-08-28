@@ -6,7 +6,7 @@
 export default {
   props: {
     classes: String,
-    style: String,
+    style: Object,
     icon: String,
   },
 }

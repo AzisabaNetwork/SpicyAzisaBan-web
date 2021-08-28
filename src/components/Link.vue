@@ -1,5 +1,5 @@
 <template>
-  <a :href="href" rel="noopener" :target="openNewTab ? '_blank' : null" :class="color">
+  <a :href="href" rel="noopener" :target="openNewTab ? '_blank' : null" :class="color" :style="style">
     <slot />
   </a>
 </template>
@@ -10,6 +10,7 @@ export default {
     href: String,
     openNewTab: Boolean,
     color: String,
+    style: Object,
   }
 }
 </script>

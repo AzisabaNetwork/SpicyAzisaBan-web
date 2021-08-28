@@ -1,12 +1,12 @@
 <template>
   <li class="row">
     <div class="col" :class="`s${ks || 5}`">
-      <span class="flow-text">
+      <span class="flow-text" :class="kc">
         {{ k }}
       </span>
     </div>
     <div class="col" :class="`s${vs || 7}`">
-      <span class="flow-text">
+      <span class="flow-text" :class="vc">
         {{ v }}
         <slot />
       </span>
@@ -21,6 +21,8 @@ export default {
     vs: Number,
     k: String,
     v: String,
+    kc: String,
+    vc: String,
   },
 }
 </script>

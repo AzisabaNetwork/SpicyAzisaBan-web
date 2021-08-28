@@ -1,3 +1,4 @@
+<!--suppress HttpUrlsUsage -->
 <template>
   <Navbar/>
   <Preloader size="big" :active="spinnerActive" color="spinner-blue-only" />
@@ -39,6 +40,16 @@
         </table>
       </div>
     </div>
+    <h4>証拠一覧</h4>
+    <div class="row">
+      <FlippedTable>
+        <FlippedTableEntry v-for="proof in punishment.proofs" :key="proof.id" :ks="1" :vs="11" :k="'#' + proof.id" vc="left">
+          <MdImage v-if="/\.(png|gif|jpg|jpeg)$/.test(proof.text)" :src="proof.text" style="max-width: 720px; max-height: 480px" />
+          <Link v-else-if="proof.text.startsWith('http://') || proof.text.startsWith('https://')" :href="proof.text">{{ proof.text }}</Link>
+          <Dummy v-else>{{ proof.text }}</Dummy>
+        </FlippedTableEntry>
+      </FlippedTable>
+    </div>
   </Container>
 </template>
 
@@ -55,6 +66,7 @@ import Time from '@/components/Time.vue'
 import ColoredBoolean from '@/components/ColoredBoolean.vue'
 import Dummy from '@/components/Dummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
+import MdImage from '@/components/MdImage.vue'
 
 function toast(text: string) {
   // @ts-ignore
@@ -66,6 +78,7 @@ const disableForm = ref(false)
 
 export default {
   components: {
+    MdImage,
     MdIcon,
     Dummy,
     ColoredBoolean,
@@ -131,7 +144,7 @@ export default {
 </style>
 
 <style scoped>
-.td, .th {
+td, th {
   text-align: inherit;
 }
 

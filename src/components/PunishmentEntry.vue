@@ -6,11 +6,22 @@
     <td>{{ reason }}</td>
     <td>{{ unProcessTime(duration) }}</td>
     <td>{{ server }}</td>
+    <td>
+      <Link color="teal-but-green" :href="'/punishments/view/' + id"><MdIcon classes="right" style="transform: scale(1.2); padding-right: 15px;" icon="article" /></Link>
+      <Link color="teal-but-green" :href="'/punishments/edit/' + id"><MdIcon classes="right" style="opacity: 0.1;" icon="edit" /></Link>
+    </td>
   </tr>
 </template>
 
 <script lang="ts">
+import Link from "@/components/Link.vue"
+import MdIcon from "@/components/MdIcon.vue"
+
 export default {
+  components: {
+    MdIcon,
+    Link,
+  },
   methods: {
     translateType(type: string) {
       switch (type) {

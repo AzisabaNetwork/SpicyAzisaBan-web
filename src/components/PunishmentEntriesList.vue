@@ -8,6 +8,7 @@
         <th>理由</th>
         <th>期間</th>
         <th>サーバー</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>

@@ -1,13 +1,21 @@
 <template>
-  <a :href="href" rel="noopener" :target="openNewTab ? '_blank' : null">{{ text }}</a>
+  <a :href="href" rel="noopener" :target="openNewTab ? '_blank' : null" :class="color">
+    <slot />
+  </a>
 </template>
 
-<script>
-module.exports = {
+<script lang="ts">
+export default {
   props: {
     href: String,
-    text: String,
     openNewTab: Boolean,
+    color: String,
   }
 }
 </script>
+
+<style scoped>
+a.teal-but-green {
+  color: #26c385;
+}
+</style>

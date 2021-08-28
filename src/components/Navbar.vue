@@ -1,10 +1,10 @@
 <template>
   <NavWrapper :logged-in="loggedIn" :username="username">
-    <li><Link href="/" text="処罰履歴" /></li>
+    <li><Link href="/">処罰履歴</Link></li>
   </NavWrapper>
   <AccountMenu>
-    <li><Link href="/me" text="設定" /></li>
-    <li><Link text="ログアウト" @click="doLogout()" /></li>
+    <li><Link href="/me">設定</Link></li>
+    <li><Link @click="doLogout()">ログアウト</Link></li>
   </AccountMenu>
   <Modal id="login-modal" :dismissible="dismissibleLoginModal">
     <ModalContent title="ログイン / 登録">

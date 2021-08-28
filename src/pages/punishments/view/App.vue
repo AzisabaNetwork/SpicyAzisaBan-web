@@ -1,6 +1,6 @@
 <!--suppress HttpUrlsUsage -->
 <template>
-  <Navbar/>
+  <Navbar :dismissible-login-modal="true" />
   <Preloader size="big" :active="spinnerActive" color="spinner-blue-only" />
   <Container v-if="punishment">
     <div class="row">

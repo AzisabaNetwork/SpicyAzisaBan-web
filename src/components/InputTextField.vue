@@ -9,9 +9,10 @@
         :ref="ref"
         v-model="value"
         :pattern="pattern"
-        :class="[whiteText ? 'white-text' : '']"
+        :class="[whiteText ? 'white-text' : '', inputClass]"
         :style="inputStyle"
         :placeholder="placeholder"
+        @change="update"
     />
     <label
         :for="id"
@@ -42,7 +43,13 @@ export default {
     placeholder: String,
     defaultValue: String,
     activeLabel: Boolean,
-  }
+    inputClass: String,
+  },
+  methods: {
+    update(event) {
+      this.value = event.target.value
+    },
+  },
 }
 </script>
 

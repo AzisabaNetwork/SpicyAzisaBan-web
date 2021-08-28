@@ -16,15 +16,32 @@
           <FlippedTableEntry :ks="2" :vs="10" k="処罰日時" :v="new Date(punishment.start).toLocaleString('ja-JP')" />
           <FlippedTableEntry :ks="2" :vs="10" k="期限切れ日時" :v="new Date(punishment.end).toLocaleString('ja-JP')" v-if="punishment.end > 0" />
           <FlippedTableEntry :ks="2" :vs="10" k="期間">
-            <InputTextField
-                v-if="isTemp() && editing"
-                id="p-time"
-                ref="time"
-                white-text
-                label="期間"
-                :default-value="unProcessTime(punishment.end - punishment.start)"
-                active-label
-            />
+            <Dummy v-if="isTemp() && editing">
+              <label @click="refreshDateTimePickers">
+                <input class="filled-in white-text" type="checkbox" v-model="isPerm" :value="punishment.end <= 0" />
+                <span>無期限</span>
+              </label>
+              <InputTextField
+                  v-if="!isPerm"
+                  id="end-date-picker"
+                  input-class="datepicker"
+                  :default-value="new Date(punishment.end).toDateString()"
+                  label="期間 (DD/MM/YYYY)"
+                  ref="end-date-picker"
+                  active-label
+                  white-text
+              />
+              <InputTextField
+                  v-if="!isPerm"
+                  id="end-time-picker"
+                  input-class="timepicker"
+                  :default-value="new Date(punishment.end).toTimeString()"
+                  label="期間 (hh:mm:ss)"
+                  ref="end-time-picker"
+                  active-label
+                  white-text
+              />
+            </Dummy>
             <Time v-else :time="punishment.end - punishment.start" />
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="サーバー">
@@ -120,6 +137,7 @@ function toast(text: string) {
 const editing = ref(false)
 const isUpdatingData = ref(false)
 const punishment = ref(null)
+const isPerm = ref(false)
 
 export default {
   components: {
@@ -143,36 +161,6 @@ export default {
     }
   },
   methods: {
-    unProcessTime(n: number) {
-      if (n < 0) return '-1'
-      let time = n
-      let d = 0
-      let h = 0
-      let m = 0
-      let s = 0
-      if (time >= 86400000) {
-        d = Math.floor(time / 86400000)
-        time -= d * 86400000
-      }
-      if (time >= 3600000) {
-        h = Math.floor(time / 3600000)
-        time -= h * 3600000
-      }
-      if (time >= 60000) {
-        m = Math.floor(time / 60000)
-        time -= m * 60000
-      }
-      if (time >= 1000) {
-        s = Math.floor(time / 1000)
-        time -= s * 1000
-      }
-      let str = ''
-      if (d !== 0) str += `${d}d`
-      if (h !== 0) str += `${h}h`
-      if (m !== 0) str += `${m}m`
-      if (s !== 0 || str === '') str += `${s}s`
-      return str
-    },
     isTemp() {
       return punishment.value.type.includes('TEMP_')
     },
@@ -185,10 +173,25 @@ export default {
           M.Materialbox.init(elems) // eslint-disable-line no-undef
         }, 10)
       }
+      this.refreshDateTimePickers()
+    },
+    refreshDateTimePickers() {
+      setTimeout(() => {
+        const datePickers = document.querySelectorAll('.datepicker')
+        // @ts-ignore
+        M.Datepicker.init(datePickers) // eslint-disable-line no-undef
+        const timePickers = document.querySelectorAll('.timepicker')
+        // @ts-ignore
+        M.Timepicker.init(timePickers) // eslint-disable-line no-undef
+      }, 10)
     },
     updateData() {
       if (!editing.value || isUpdatingData.value || !punishment.value) return
       isUpdatingData.value = true
+      const end = this.isTemp() && !isPerm.value
+          ? new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`).getTime()
+          : -1
+      console.log(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`)
       fetch(`${process.env.VUE_APP_API_URL}/punishments/update`, {
         method: 'POST',
         headers: {
@@ -199,7 +202,7 @@ export default {
         body: JSON.stringify({
           id: punishment.value.id,
           reason: this.$refs.reason.value,
-          end: this.isTemp() ? (this.$refs.time.value || '-1') : -1,
+          end,
           server: this.$refs.server?.value || punishment.value.server,
           unpunish_reason: this.$refs.unpunishReason?.value || null,
           proofs: punishment.value.proofs.map(p => ({ id: p.id, value: this.$refs[`proof-${p.id}`].value })),
@@ -267,6 +270,7 @@ export default {
       punishment,
       editing,
       isUpdatingData,
+      isPerm,
     }
   }
 }

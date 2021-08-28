@@ -1,7 +1,7 @@
 <template>
   <li class="row">
     <div class="col" :class="`s${ks || 5}`">
-      <span class="flow-text" :class="kc">
+      <span class="flow-text" :class="kc" style="text-align: center">
         {{ k }}
       </span>
     </div>

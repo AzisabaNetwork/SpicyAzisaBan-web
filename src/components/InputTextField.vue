@@ -11,19 +11,21 @@
         :pattern="pattern"
         :class="[whiteText ? 'white-text' : '']"
         :style="inputStyle"
+        :placeholder="placeholder"
     />
     <label
         :for="id"
         :style="labelStyle"
+        :class="activeLabel ? 'active' : null"
     >{{ label }}</label>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
+  data(props) {
     return {
-      value: "",
+      value: props.defaultValue
     }
   },
   props: {
@@ -35,8 +37,11 @@ export default {
     ref: String,
     pattern: String,
     whiteText: Boolean,
-    inputStyle: String,
-    labelStyle: String,
+    inputStyle: Object,
+    labelStyle: Object,
+    placeholder: String,
+    defaultValue: String,
+    activeLabel: Boolean,
   }
 }
 </script>

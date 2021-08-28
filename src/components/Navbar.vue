@@ -38,6 +38,13 @@ function toast(text: string) {
 
 const username = ref("")
 const loggedIn = ref(false)
+const user = ref({
+  id: 0,
+  username: '',
+  group: 'user',
+  last_update: 0,
+})
+
 function refreshLoginStatus() {
   fetch(`${process.env.VUE_APP_API_URL}/i_users/me`, {
     headers: {
@@ -54,6 +61,7 @@ function refreshLoginStatus() {
       }
       return
     }
+    user.value = data
     username.value = data['username']
   })
 }
@@ -66,7 +74,6 @@ export default {
     doRegister() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
       if (this.$refs.password.value.length < 7) return
-      if (this.$refs.mfa_token.value.length > 0 && (this.$refs.mfa_token.value.length < 6 || this.$refs.mfa_token.value.length > 10)) return
       toast('アカウントを作成中...')
       fetch(`${process.env.VUE_APP_API_URL}/i_users/register`, {
         method: 'POST',
@@ -96,7 +103,8 @@ export default {
     doLogin() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
       if (this.$refs.password.value.length < 7) return
-      if (this.$refs.mfa_token.value.length > 0 && (this.$refs.mfa_token.value.length < 6 || this.$refs.mfa_token.value.length > 10)) return
+      const mfa = this.$refs.mfa_token?.value || ''
+      if (mfa.length > 0 && (mfa.length < 6 || mfa.length > 10)) return
       toast('ログイン中...')
       fetch(`${process.env.VUE_APP_API_URL}/i_users/login`, {
         method: 'POST',
@@ -107,7 +115,7 @@ export default {
         body: JSON.stringify({
           email: this.$refs.email.value,
           password: this.$refs.password.value,
-          mfa_token: this.$refs.mfa_token.value,
+          mfa_token: mfa,
         }),
       }).then(res => res.json()).then(res => {
         // @ts-expect-error
@@ -170,6 +178,7 @@ export default {
     return {
       loggedIn,
       username,
+      user,
     }
   },
   setup() {

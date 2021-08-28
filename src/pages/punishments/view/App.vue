@@ -15,7 +15,18 @@
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="処罰日時" :v="new Date(punishment.start).toLocaleString('ja-JP')" />
           <FlippedTableEntry :ks="2" :vs="10" k="期限切れ日時" :v="new Date(punishment.end).toLocaleString('ja-JP')" v-if="punishment.end > 0" />
-          <FlippedTableEntry :ks="2" :vs="10" k="期間" v-if="punishment.end > 0"><Time :time="punishment.end - punishment.start" /></FlippedTableEntry>
+          <FlippedTableEntry :ks="2" :vs="10" k="期間">
+            <InputTextField
+                v-if="isTemp() && editing"
+                id="p-time"
+                ref="time"
+                white-text
+                label="期間"
+                :default-value="unProcessTime(punishment.end - punishment.start)"
+                active-label
+            />
+            <Time v-else :time="punishment.end - punishment.start" />
+          </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="サーバー">
             <InputTextField
                 v-if="(this.$refs.navbar.user.group === 'manager' || this.$refs.navbar.user.group === 'admin') && editing"
@@ -132,6 +143,39 @@ export default {
     }
   },
   methods: {
+    unProcessTime(n: number) {
+      if (n < 0) return '-1'
+      let time = n
+      let d = 0
+      let h = 0
+      let m = 0
+      let s = 0
+      if (time >= 86400000) {
+        d = Math.floor(time / 86400000)
+        time -= d * 86400000
+      }
+      if (time >= 3600000) {
+        h = Math.floor(time / 3600000)
+        time -= h * 3600000
+      }
+      if (time >= 60000) {
+        m = Math.floor(time / 60000)
+        time -= m * 60000
+      }
+      if (time >= 1000) {
+        s = Math.floor(time / 1000)
+        time -= s * 1000
+      }
+      let str = ''
+      if (d !== 0) str += `${d}d`
+      if (h !== 0) str += `${h}h`
+      if (m !== 0) str += `${m}m`
+      if (s !== 0 || str === '') str += `${s}s`
+      return str
+    },
+    isTemp() {
+      return punishment.value.type.includes('TEMP_')
+    },
     onEditButtonClick() {
       editing.value = !editing.value
       if (!editing.value) {
@@ -155,6 +199,7 @@ export default {
         body: JSON.stringify({
           id: punishment.value.id,
           reason: this.$refs.reason.value,
+          end: this.isTemp() ? (this.$refs.time.value || '-1') : -1,
           server: this.$refs.server?.value || punishment.value.server,
           unpunish_reason: this.$refs.unpunishReason?.value || null,
           proofs: punishment.value.proofs.map(p => ({ id: p.id, value: this.$refs[`proof-${p.id}`].value })),

@@ -14,8 +14,7 @@
             <Dummy v-else>{{ punishment.reason }}</Dummy>
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="処罰日時" :v="new Date(punishment.start).toLocaleString('ja-JP')" />
-          <FlippedTableEntry :ks="2" :vs="10" k="期限切れ日時" :v="new Date(punishment.end).toLocaleString('ja-JP')" v-if="punishment.end > 0" />
-          <FlippedTableEntry :ks="2" :vs="10" k="期間">
+          <FlippedTableEntry :ks="2" :vs="10" k="期限切れ日時" v-if="punishment.end > 0">
             <Dummy v-if="isTemp() && editing">
               <label @click="refreshDateTimePickers">
                 <input class="filled-in white-text" type="checkbox" v-model="isPerm" :value="punishment.end <= 0" />
@@ -25,22 +24,41 @@
                   v-if="!isPerm"
                   id="end-date-picker"
                   input-class="datepicker"
-                  :default-value="new Date(punishment.end).toDateString()"
-                  label="期間 (DD/MM/YYYY)"
+                  :default-value="dateToDateString(new Date(punishment.end))"
+                  label="期限切れ日時 (DD/MM/YYYY)"
                   ref="end-date-picker"
                   active-label
                   white-text
+                  @change="onEndDateTimeChange"
               />
               <InputTextField
                   v-if="!isPerm"
                   id="end-time-picker"
                   input-class="timepicker"
-                  :default-value="new Date(punishment.end).toTimeString()"
-                  label="期間 (hh:mm:ss)"
+                  :default-value="dateToTimeString(new Date(punishment.end))"
+                  label="期限切れ日時 (hh:mm:ss)"
                   ref="end-time-picker"
                   active-label
                   white-text
+                  @change="onEndDateTimeChange"
               />
+            </Dummy>
+            <Dummy v-else>{{ new Date(punishment.end).toLocaleString('ja-JP') }}</Dummy>
+          </FlippedTableEntry>
+          <FlippedTableEntry :ks="2" :vs="10" k="期間">
+            <Dummy v-if="isTemp() && editing">
+              <InputTextField
+                  v-if="!isPerm"
+                  id="duration"
+                  :default-value="unProcessTime3(punishment.end - punishment.start)"
+                  label="期間"
+                  ref="duration"
+                  active-label
+                  white-text
+                  :input-class="isInvalidDuration ? 'the-invalid' : null"
+                  @change="onDurationChange"
+              />
+              <Dummy v-else>無期限</Dummy>
             </Dummy>
             <Time v-else :time="punishment.end - punishment.start" />
           </FlippedTableEntry>
@@ -127,6 +145,7 @@ import Dummy from '@/components/Dummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import MdImage from '@/components/MdImage.vue'
 import InputTextField from '@/components/InputTextField.vue'
+import { processTime, unProcessTime3, zero } from '@/util/util'
 
 function toast(text: string) {
   // @ts-ignore
@@ -138,6 +157,7 @@ const editing = ref(false)
 const isUpdatingData = ref(false)
 const punishment = ref(null)
 const isPerm = ref(false)
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 export default {
   components: {
@@ -158,11 +178,40 @@ export default {
   data() {
     return {
       navbar: {},
+      isInvalidDuration: false,
     }
   },
   methods: {
+    processTime,
+    unProcessTime3,
     isTemp() {
       return punishment.value.type.includes('TEMP_')
+    },
+    dateToDateString(date: Date) {
+      return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+    },
+    dateToTimeString(date: Date) {
+      let hours = date.getHours()
+      let what = hours > 12 ? 'PM' : 'AM'
+      if (hours > 12) hours -= 12
+      if (hours === 0) hours = 12
+      return `${zero(2, hours.toString())}:${zero(2, date.getMinutes().toString())} ${what}`
+    },
+    onDurationChange(event) {
+      try {
+        const date = new Date(processTime(event.target.value) + punishment.value.start)
+        this.$refs['end-date-picker'].value = this.dateToDateString(date)
+        this.$refs['end-time-picker'].value = this.dateToTimeString(date)
+        this.isInvalidDuration = false
+      } catch (e) {
+        this.isInvalidDuration = true
+        return
+      }
+    },
+    onEndDateTimeChange() {
+      const time = new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`).getTime() -
+          punishment.value.start
+      this.$refs.duration.value = this.unProcessTime3(time)
     },
     onEditButtonClick() {
       editing.value = !editing.value
@@ -191,6 +240,11 @@ export default {
       const end = this.isTemp() && !isPerm.value
           ? new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`).getTime()
           : -1
+      if (isNaN(end)) {
+        toast('期限切れ日時が無効です。')
+        isUpdatingData.value = false
+        return
+      }
       console.log(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`)
       fetch(`${process.env.VUE_APP_API_URL}/punishments/update`, {
         method: 'POST',
@@ -321,5 +375,11 @@ table.actions-table, table.actions-table>thead>tr, table.actions-table>tbody>tr 
 .editing-false {
   color: gray;
   transition: all 200ms;
+}
+
+.the-invalid {
+  border-bottom: 1px solid #F44336;
+  -webkit-box-shadow: 0 1px 0 0 #f44336;
+  box-shadow: 0 1px 0 0 #f44336;
 }
 </style>

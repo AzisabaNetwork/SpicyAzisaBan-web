@@ -195,7 +195,7 @@ export default {
       let what = hours > 12 ? 'PM' : 'AM'
       if (hours > 12) hours -= 12
       if (hours === 0) hours = 12
-      return `${zero(2, hours.toString())}:${zero(2, date.getMinutes().toString())} ${what}`
+      return `${zero(2, hours.toString())}:${zero(2, date.getMinutes().toString())}:${zero(2, date.getSeconds().toString())} ${what}`
     },
     onDurationChange(event) {
       try {
@@ -209,9 +209,11 @@ export default {
       }
     },
     onEndDateTimeChange() {
-      const time = new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`).getTime() -
-          punishment.value.start
+      const date = new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`)
+      const time = date.getTime() - punishment.value.start
       this.$refs.duration.value = this.unProcessTime3(time)
+      this.$refs['end-date-picker'].value = this.dateToDateString(date)
+      this.$refs['end-time-picker'].value = this.dateToTimeString(date)
     },
     onEditButtonClick() {
       editing.value = !editing.value

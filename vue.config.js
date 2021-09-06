@@ -12,5 +12,9 @@ module.exports = {
             entry: 'src/pages/punishments/view/main.ts',
             title: 'view punishment | SpicyAzisaBan',
         },
+        me: {
+            entry: 'src/pages/me/main.ts',
+            title: 'you | SpicyAzisaBan',
+        },
     }
 }

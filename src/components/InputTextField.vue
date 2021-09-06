@@ -1,5 +1,5 @@
 <template>
-  <div class="input-field col s12">
+  <div class="input-field col" :class="divClass || 's12'">
     <input
         :id="id"
         :type="type || 'text'"
@@ -44,6 +44,7 @@ export default {
     defaultValue: String,
     activeLabel: Boolean,
     inputClass: String,
+    divClass: String,
   },
   methods: {
     update(event) {

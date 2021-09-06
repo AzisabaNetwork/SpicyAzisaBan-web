@@ -8,9 +8,9 @@
   </AccountMenu>
   <Modal id="login-modal" :dismissible="dismissibleLoginModal">
     <ModalContent title="ログイン / 登録">
-      <InputTextField :min-length=5 type="email" label="メールアドレス" id="email" ref="email"/>
-      <InputTextField :min-length=7 type="password" label="パスワード" id="password" ref="password"/>
-      <InputTextField :min-length=6 :max-length=10 type="text" label="(ログイン時+有効化してる人のみ)2FAのコードもしくは復旧コード" id="2fa" ref="mfa_token"/>
+      <InputTextField :min-length=5 type="email" label="メールアドレス" id="navbar_email" ref="email"/>
+      <InputTextField :min-length=7 type="password" label="パスワード" id="navbar_password" ref="password"/>
+      <InputTextField :min-length=6 :max-length=10 type="text" label="(ログイン時+有効化してる人のみ)2FAのコードもしくは復旧コード" id="navbar_2fa" ref="mfa_token"/>
     </ModalContent>
     <ModalFooter>
       <Button color="orange darken-4" @click="doRegister" text="アカウントを作成"/>

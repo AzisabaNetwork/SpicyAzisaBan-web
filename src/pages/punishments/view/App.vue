@@ -117,13 +117,33 @@
       <FlippedTable style="width: 100%">
         <FlippedTableEntry v-for="proof in punishment.proofs" :key="proof.id" :ks="1" :vs="11" :k="'#' + proof.id" vc="left full-width text-align-left">
           <Dummy v-if="editing">
-            <InputTextField :id="'p-p-' + proof.id" :ref="'proof-' + proof.id" white-text :label="'証拠 #' + proof.id" :default-value="proof.text" active-label />
+            <div class="row" style="align-items: center; margin: 0;">
+              <div class="col s11">
+                <InputTextField :id="'p-p-' + proof.id" :ref="'proof-' + proof.id" white-text :label="'証拠 #' + proof.id" :default-value="proof.text" active-label />
+              </div>
+              <div class="col s1">
+                <Link color="clickable-icon" @click="punishment.proofs = punishment.proofs.filter(p => p.id !== proof.id)">
+                  <MdIcon icon="delete" />
+                </Link>
+              </div>
+            </div>
           </Dummy>
           <Dummy v-else>
             <MdImage v-if="/\.(png|gif|jpg|jpeg)$/.test(proof.text)" :src="proof.text" style="max-width: 90%; max-height: 90%;" />
             <Link v-else-if="proof.text.startsWith('http://') || proof.text.startsWith('https://')" :href="proof.text">{{ proof.text }}</Link>
             <Dummy v-else>{{ proof.text }}</Dummy>
           </Dummy>
+        </FlippedTableEntry>
+        <FlippedTableEntry k="" vc="left full-width text-align-left" v-if="editing" :ks="1" :vs="11">
+          <div class="row" style="align-items: center; margin: 0; height: 50px;">
+            <div class="col s11">
+            </div>
+            <div class="col s1">
+              <Link color="clickable-icon" @click="punishment.proofs.push({ id: -1, value: '' })">
+                <MdIcon icon="add" />
+              </Link>
+            </div>
+          </div>
         </FlippedTableEntry>
       </FlippedTable>
     </div>
@@ -383,5 +403,29 @@ table.actions-table, table.actions-table>thead>tr, table.actions-table>tbody>tr 
   border-bottom: 1px solid #F44336;
   -webkit-box-shadow: 0 1px 0 0 #f44336;
   box-shadow: 0 1px 0 0 #f44336;
+}
+
+.clickable-icon {
+  display: flex;
+  align-items: center;
+  float: right;
+  text-align: center;
+  margin-left: -6px;
+  border-radius: 9999px;
+  transition: 150ms ease-in-out;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+}
+
+.clickable-icon:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+i.material-icons {
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
 }
 </style>

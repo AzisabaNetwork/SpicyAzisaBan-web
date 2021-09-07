@@ -14,19 +14,7 @@ import Preloader from "@/components/Preloader.vue"
 import InputTextField from "@/components/InputTextField.vue"
 import Container from "@/components/Container.vue"
 import Button from "@/components/Button.vue";
-
-function toast(text: string) {
-  // @ts-ignore
-  M.toast({ unsafeHTML: text.replace('\n', '<br />') }) // eslint-disable-line no-undef
-  console.log(`Notification: ${text}`)
-}
-
-function isValidName(name) {
-  if (name.length < 4) return false
-  if (name.length > 32) return false
-  if (name.includes('SpicyAzisaBan')) return false
-  return /^[a-zA-Z0-9_-]{4,32}$/.test(name)
-}
+import {isValidName, toast} from '@/util/util'
 
 const disableForm = ref(false)
 

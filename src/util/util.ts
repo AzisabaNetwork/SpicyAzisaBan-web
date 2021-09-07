@@ -104,3 +104,16 @@ export const zero = (length: number, s: string): string => {
   if (s.length >= length) return s
   return '0'.repeat(length - s.length) + s
 }
+
+export const isValidName = (name: string): boolean => {
+  if (name.length < 4) return false
+  if (name.length > 32) return false
+  if (name.includes('SpicyAzisaBan')) return false
+  return /^[a-zA-Z0-9_-]{4,32}$/.test(name)
+}
+
+export const toast = (text: string) => {
+  // @ts-ignore
+  M.toast({ unsafeHTML: text.replace('\n', '<br />') }) // eslint-disable-line no-undef
+  console.log(`Notification: ${text}`)
+}

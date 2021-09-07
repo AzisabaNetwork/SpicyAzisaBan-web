@@ -4,20 +4,21 @@
   <Container v-if="me">
     <div class="row">
       <div class="col s12">
-        <div class="row" style="align-items: center;">
+        <div class="not-flexing-card z-depth-5" style="align-items: center;">
           <InputTextField
               label="ユーザー名"
               :min-length="4"
               :max-length="32"
               :default-value="me.username"
-              id="username"
+              id="me_username"
               div-class="s11"
               white-text
               active-label
+              ref="me_username"
+              :disabled="disableForm"
           />
-          <Button text="保存" />
+          <Button text="変更" :disabled="disableForm" @click="changeName()" />
         </div>
-        <hr />
       </div>
     </div>
   </Container>
@@ -30,6 +31,7 @@ import Container from '@/components/Container.vue'
 import Preloader from '@/components/Preloader.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import Button from '@/components/Button.vue'
+import {isValidName, toast} from '@/util/util'
 
 const me = ref(null)
 
@@ -40,6 +42,20 @@ export default {
     Container,
     Navbar,
     InputTextField,
+  },
+  data() {
+    return {
+      disableForm: false,
+    }
+  },
+  methods: {
+    changeName() {
+      const name = this.$refs.me_username.value
+      if (!isValidName(name)) {
+        return toast('このユーザー名は使用できません。')
+      }
+      this.disableForm = true
+    },
   },
   setup() {
     fetch(`${process.env.VUE_APP_API_URL}/i_users/me`, {
@@ -69,5 +85,19 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #fff;
+}
+</style>
+
+<style scoped>
+.not-flexing-card {
+  word-wrap: break-word;
+  position: relative;
+  flex-direction: column;
+  background-color: #22282a;
+  background-clip: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: .25rem;
+  margin: .5rem .5rem 1rem .5rem;
+  padding: 2rem;
 }
 </style>

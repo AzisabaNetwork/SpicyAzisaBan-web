@@ -12,6 +12,7 @@
         :class="[whiteText ? 'white-text' : '', inputClass]"
         :style="inputStyle"
         :placeholder="placeholder"
+        :disabled="disabled"
         @change="update"
     />
     <label
@@ -45,6 +46,7 @@ export default {
     activeLabel: Boolean,
     inputClass: String,
     divClass: String,
+    disabled: Boolean,
   },
   methods: {
     update(event) {
@@ -58,5 +60,34 @@ export default {
 /*noinspection CssUnusedSymbol*/
 .white-text {
   color: #fff;
+}
+
+input:not([type]):not(.browser-default):disabled+label,
+input:not([type]):not(.browser-default)[readonly="readonly"]+label,
+input[type=text]:not(.browser-default):disabled+label,
+input[type=text]:not(.browser-default)[readonly="readonly"]+label,
+input[type=password]:not(.browser-default):disabled+label,
+input[type=password]:not(.browser-default)[readonly="readonly"]+label,
+input[type=email]:not(.browser-default):disabled+label,
+input[type=email]:not(.browser-default)[readonly="readonly"]+label,
+input[type=url]:not(.browser-default):disabled+label,
+input[type=url]:not(.browser-default)[readonly="readonly"]+label,
+input[type=time]:not(.browser-default):disabled+label,
+input[type=time]:not(.browser-default)[readonly="readonly"]+label,
+input[type=date]:not(.browser-default):disabled+label,
+input[type=date]:not(.browser-default)[readonly="readonly"]+label,
+input[type=datetime]:not(.browser-default):disabled+label,
+input[type=datetime]:not(.browser-default)[readonly="readonly"]+label,
+input[type=datetime-local]:not(.browser-default):disabled+label,
+input[type=datetime-local]:not(.browser-default)[readonly="readonly"]+label,
+input[type=tel]:not(.browser-default):disabled+label,
+input[type=tel]:not(.browser-default)[readonly="readonly"]+label,
+input[type=number]:not(.browser-default):disabled+label,
+input[type=number]:not(.browser-default)[readonly="readonly"]+label,
+input[type=search]:not(.browser-default):disabled+label,
+input[type=search]:not(.browser-default)[readonly="readonly"]+label,
+textarea.materialize-textarea:disabled+label,
+textarea.materialize-textarea[readonly="readonly"]+label {
+  color: rgba(255, 255, 255, 0.2);
 }
 </style>

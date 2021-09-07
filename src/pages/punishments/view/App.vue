@@ -165,13 +165,7 @@ import Dummy from '@/components/Dummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import MdImage from '@/components/MdImage.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import { processTime, unProcessTime3, zero } from '@/util/util'
-
-function toast(text: string) {
-  // @ts-ignore
-  M.toast({ unsafeHTML: text.replace('\n', '<br />') }) // eslint-disable-line no-undef
-  console.log(`Notification: ${text}`)
-}
+import {processTime, toast, unProcessTime3, zero} from '@/util/util'
 
 const editing = ref(false)
 const isUpdatingData = ref(false)

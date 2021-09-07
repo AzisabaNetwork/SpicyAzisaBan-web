@@ -1,5 +1,5 @@
 <template>
-  <Navbar :dismissible-login-modal="true" />
+  <Navbar :dismissible-login-modal="true" ref="navbar" />
   <Preloader size="big" :active="!me" color="spinner-blue-only" />
   <Container v-if="me">
     <div class="row">
@@ -15,6 +15,7 @@
               white-text
               active-label
               ref="me_username"
+              pattern="^[a-zA-Z0-9_-]{4,32}$"
               :disabled="disableForm"
           />
           <Button text="変更" :disabled="disableForm" @click="changeName()" />
@@ -50,11 +51,44 @@ export default {
   },
   methods: {
     changeName() {
-      const name = this.$refs.me_username.value
-      if (!isValidName(name)) {
+      if (this.disableForm) return
+      const username = this.$refs.me_username.value
+      if (!isValidName(username)) {
         return toast('このユーザー名は使用できません。')
       }
       this.disableForm = true
+      fetch(`${process.env.VUE_APP_API_URL}/i_users/changename`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+        },
+        body: JSON.stringify({
+          user_id: this.$refs.navbar.user.id,
+          username,
+        }),
+      }).then(res => res.json()).then(res => {
+        const err = res.error
+        if (err) {
+          if (err === 'invalid') {
+            toast('このユーザー名は使用できません。')
+          } else if (err === 'already_taken') {
+            toast('このユーザー名はすでにほかの人に使用されています。')
+          } else if (err === 'invalid_user') {
+            toast('ユーザーが存在しません。')
+          } else {
+            toast(`不明なエラーが発生しました。 (${err})`)
+          }
+          return
+        }
+        toast('ユーザー名を変更しました。')
+        setTimeout(() => {
+          this.$refs.navbar.username = username
+        }, 100)
+      }).finally(() => {
+        this.disableForm = false
+      })
     },
   },
   setup() {

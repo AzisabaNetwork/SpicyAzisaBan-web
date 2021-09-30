@@ -14,6 +14,8 @@
             <Dummy v-else>{{ punishment.reason }}</Dummy>
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="処罰日時" :v="new Date(punishment.start).toLocaleString('ja-JP')" />
+          <FlippedTableEntry :ks="2" :vs="10" k="有効"><ColoredBoolean :bool="punishment.active" /></FlippedTableEntry>
+          <FlippedTableEntry :ks="2" :vs="10" k="期限切れ" v-if="punishment.end > 0 && isTemp()"><ColoredBoolean :bool="punishment.end < Date.now()" /></FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="期限切れ日時" v-if="punishment.end > 0">
             <Dummy v-if="isTemp() && editing">
               <label @click="refreshDateTimePickers">

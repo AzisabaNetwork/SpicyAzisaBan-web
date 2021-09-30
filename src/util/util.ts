@@ -117,3 +117,8 @@ export const toast = (text: string) => {
   M.toast({ unsafeHTML: text.replace('\n', '<br />') }) // eslint-disable-line no-undef
   console.log(`Notification: ${text}`)
 }
+
+export const openModal = (element: HTMLElement) => {
+  // @ts-ignore
+  M.Modal.getInstance(element).open() // eslint-disable-line no-undef
+}

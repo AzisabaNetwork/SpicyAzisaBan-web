@@ -261,7 +261,6 @@ export default {
         isUpdatingData.value = false
         return
       }
-      console.log(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`)
       fetch(`${process.env.VUE_APP_API_URL}/punishments/update`, {
         method: 'POST',
         headers: {

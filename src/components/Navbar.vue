@@ -13,8 +13,8 @@
       <InputTextField :min-length=6 :max-length=10 type="text" label="(ログイン時+有効化してる人のみ)2FAのコードもしくは復旧コード" id="navbar_2fa" ref="mfa_token"/>
     </ModalContent>
     <ModalFooter>
-      <Button color="orange darken-4" @click="doRegister" text="アカウントを作成"/>
-      <Button color="green" @click="doLogin" text="ログイン"/>
+      <Button color="orange darken-4" @click="doRegister" text="アカウントを作成" :disabled="disableForm" />
+      <Button color="green" @click="doLogin" text="ログイン" :disabled="disableForm" />
     </ModalFooter>
   </Modal>
 </template>
@@ -74,6 +74,7 @@ export default {
     doRegister() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
       if (this.$refs.password.value.length < 7) return
+      this.disableForm = true
       toast('アカウントを作成中...')
       fetch(`${process.env.VUE_APP_API_URL}/i_users/register`, {
         method: 'POST',
@@ -98,13 +99,14 @@ export default {
           return
         }
         toast('確認のメールを送信しました。\n見つからない場合は迷惑メールフォルダも確認してください。')
-      })
+      }).finally(() => this.disableForm = false)
     },
     doLogin() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
       if (this.$refs.password.value.length < 7) return
       const mfa = this.$refs.mfa_token?.value || ''
       if (mfa.length > 0 && (mfa.length < 6 || mfa.length > 10)) return
+      this.disableForm = true
       toast('ログイン中...')
       fetch(`${process.env.VUE_APP_API_URL}/i_users/login`, {
         method: 'POST',
@@ -141,7 +143,7 @@ export default {
         refreshLoginStatus()
         location.reload()
         toast('You\'ve (probably) successfully logged in!')
-      })
+      }).finally(() => this.disableForm = false)
     },
     doLogout() {
       const session = localStorage.getItem("spicyazisaban_session")
@@ -179,6 +181,7 @@ export default {
       loggedIn,
       username,
       user,
+      disableForm: false,
     }
   },
   setup() {

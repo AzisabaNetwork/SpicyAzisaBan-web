@@ -21,7 +21,7 @@
       </div>
     </div>
   </nav>
-  <ul class="sidenav" id="mobile-nav">
+  <ul class="sidenav" id="mobile-nav" style="z-index: 1000;">
     <slot />
     <li id="log-in-out-mobile">
       <a onclick="M.Modal.getInstance(document.getElementById('login-modal')).open()" class="flex-center">ログイン<i class="material-icons" style="color: #0f0; margin-left: 10px;">login</i></a>

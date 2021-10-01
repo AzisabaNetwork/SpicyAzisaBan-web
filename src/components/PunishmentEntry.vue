@@ -7,8 +7,12 @@
     <td><Time :time="duration" /></td>
     <td>{{ server }}</td>
     <td>
-      <Link color="teal-but-green" :href="`/punishments/view/?id=${id}`"><MdIcon classes="right" style="transform: scale(1.2); padding-right: 15px;" icon="article" /></Link>
-      <Link color="teal-but-green" :href="`/punishments/view/?id=${id}&edit`"><MdIcon classes="right" icon="edit" /></Link>
+      <Link color="teal-but-green" :href="`/punishments/view/?id=${id}`">
+        <MdIcon classes="right clickable-icon" style="transform: scale(1.15); margin-right: 15px; padding: 3px;" icon="article" />
+      </Link>
+      <Link color="teal-but-green" :href="`/punishments/view/?id=${id}&edit`">
+        <MdIcon classes="right clickable-icon" style="padding: 3px;" icon="edit" />
+      </Link>
     </td>
   </tr>
 </template>

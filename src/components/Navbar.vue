@@ -29,6 +29,7 @@ import Modal from "@/components/Modal.vue";
 import ModalContent from "@/components/ModalContent.vue";
 import ModalFooter from "@/components/ModalFooter.vue";
 import NavWrapper from "@/components/NavWrapper.vue";
+import {api} from '@/util/util'
 
 function toast(text: string) {
   // @ts-ignore
@@ -46,7 +47,7 @@ const user = ref({
 })
 
 function refreshLoginStatus() {
-  fetch(`${process.env.VUE_APP_API_URL}/i_users/me`, {
+  fetch(api('/i_users/me'), {
     headers: {
       'Accept': 'application/json',
       'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
@@ -76,7 +77,7 @@ export default {
       if (this.$refs.password.value.length < 7) return
       this.disableForm = true
       toast('アカウントを作成中...')
-      fetch(`${process.env.VUE_APP_API_URL}/i_users/register`, {
+      fetch(api('/i_users/register'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +109,7 @@ export default {
       if (mfa.length > 0 && (mfa.length < 6 || mfa.length > 10)) return
       this.disableForm = true
       toast('ログイン中...')
-      fetch(`${process.env.VUE_APP_API_URL}/i_users/login`, {
+      fetch(api('/i_users/login'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +149,7 @@ export default {
     doLogout() {
       const session = localStorage.getItem("spicyazisaban_session")
       if (!session) return
-      fetch(`${process.env.VUE_APP_API_URL}/i_users/logout`, {
+      fetch(api('/i_users/logout'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

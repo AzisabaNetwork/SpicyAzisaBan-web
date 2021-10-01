@@ -122,3 +122,8 @@ export const openModal = (element: HTMLElement) => {
   // @ts-ignore
   M.Modal.getInstance(element).open() // eslint-disable-line no-undef
 }
+
+export const api = (path: string) => {
+  const apiRoot = localStorage.getItem("spicyazisaban-api-url-override") || process.env.VUE_APP_API_URL
+  return `${apiRoot}${path}`
+}

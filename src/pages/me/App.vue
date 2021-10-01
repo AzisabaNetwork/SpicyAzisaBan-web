@@ -112,7 +112,7 @@ import Container from '@/components/Container.vue'
 import Preloader from '@/components/Preloader.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import Button from '@/components/Button.vue'
-import {isValidName, openModal, toast} from '@/util/util'
+import {api, isValidName, openModal, toast} from '@/util/util'
 import Card from '@/components/Card.vue'
 import Modal from '@/components/Modal.vue'
 import ModalContent from '@/components/ModalContent.vue'
@@ -146,7 +146,7 @@ export default {
       }
       toast('パスワードを変更中...')
       this.disableForm = true
-      fetch(`${process.env.VUE_APP_API_URL}/i_users/changename`, {
+      fetch(api('/i_users/changename'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -191,7 +191,7 @@ export default {
         return toast('パスワードは7文字以上にする必要があります。')
       }
       this.disableForm = true
-      fetch(`${process.env.VUE_APP_API_URL}/i_users/changepassword`, {
+      fetch(api('/i_users/changepassword'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -219,7 +219,7 @@ export default {
       })
     },
     refreshMFAStatus() {
-      return fetch(`${process.env.VUE_APP_API_URL}/i_users/me`, {
+      return fetch(api('/i_users/me'), {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ export default {
           const token = prompt('現在の2FA認証コードもしくは復旧コード')
           if (!token) return this.disableForm = false
           toast('2FAを無効にしています...')
-          fetch(`${process.env.VUE_APP_API_URL}/i_users/disable_2fa`, {
+          fetch(api('/i_users/disable_2fa'), {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -268,7 +268,7 @@ export default {
         } else {
           const password = this.$refs.me_mfa_password.value
           toast('2FAを有効にしています...')
-          fetch(`${process.env.VUE_APP_API_URL}/i_users/enable_2fa`, {
+          fetch(api('/i_users/enable_2fa'), {
             method: 'POST',
             headers: {
               'Accept': 'application/json',
@@ -313,7 +313,7 @@ export default {
   setup() {
     const mfa_enabled = ref(false)
     const me = ref(null)
-    fetch(`${process.env.VUE_APP_API_URL}/i_users/me`, {
+    fetch(api('/i_users/me'), {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

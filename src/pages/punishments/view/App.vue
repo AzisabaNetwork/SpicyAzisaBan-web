@@ -167,7 +167,7 @@ import Dummy from '@/components/Dummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import MdImage from '@/components/MdImage.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import {processTime, toast, unProcessTime3, zero} from '@/util/util'
+import {api, processTime, toast, unProcessTime3, zero} from '@/util/util'
 
 const editing = ref(false)
 const isUpdatingData = ref(false)
@@ -264,7 +264,7 @@ export default {
         isUpdatingData.value = false
         return
       }
-      fetch(`${process.env.VUE_APP_API_URL}/punishments/update`, {
+      fetch(api('/punishments/update'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -284,7 +284,7 @@ export default {
           toast(`処罰データの更新に失敗しました: ${res['error']}`)
           return
         }
-        await fetch(`${process.env.VUE_APP_API_URL}/punishments/get/${punishment.value.id}`, {
+        await fetch(api(`/punishments/get/${punishment.value.id}`), {
           headers: {
             'Accept': 'application/json',
             'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
@@ -317,7 +317,7 @@ export default {
     if (isNaN(id)) id = 0
     const spinnerActive = ref(!!id)
     if (id) {
-      fetch(`${process.env.VUE_APP_API_URL}/punishments/get/${id}`, {
+      fetch(api(`/punishments/get/${id}`), {
         headers: {
           'Accept': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),

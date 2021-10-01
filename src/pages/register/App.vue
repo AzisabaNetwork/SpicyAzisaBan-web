@@ -14,7 +14,7 @@ import Preloader from "@/components/Preloader.vue"
 import InputTextField from "@/components/InputTextField.vue"
 import Container from "@/components/Container.vue"
 import Button from "@/components/Button.vue";
-import {isValidName, toast} from '@/util/util'
+import {api, isValidName, toast} from '@/util/util'
 
 const disableForm = ref(false)
 
@@ -32,7 +32,7 @@ export default {
       const username = this.$refs.username.value
       if (!isValidName(username)) return toast('この名前は使用できません。')
       disableForm.value = true
-      fetch(`${process.env.VUE_APP_API_URL}/i_users/changename`, {
+      fetch(api('/i_users/changename'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -69,7 +69,7 @@ export default {
     const showForm = ref(false)
     const userId = ref(0)
     if (state) {
-      fetch(`${process.env.VUE_APP_API_URL}/i_users/register/${state}`).then(res => res.json()).then(data => {
+      fetch(api(`/i_users/register/${state}`)).then(res => res.json()).then(data => {
         const err = data['error']
         if (err) {
           spinnerActive.value = false

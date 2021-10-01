@@ -27,6 +27,7 @@ import PunishmentEntriesList from "@/components/PunishmentEntriesList.vue"
 import PunishmentEntry from "@/components/PunishmentEntry.vue"
 import Container from "@/components/Container.vue"
 import Button from "@/components/Button.vue"
+import {api} from '@/util/util'
 
 const page = ref(0)
 const punishments = ref([])
@@ -45,7 +46,7 @@ export default {
     fetchMore() {
       if (!hasNext.value) return
       disableFetchMoreButton.value = true
-      fetch(`${process.env.VUE_APP_API_URL}/punishments/list?page=${++page.value}`, {
+      fetch(api(`/punishments/list?page=${++page.value}`), {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ export default {
     },
   },
   setup() {
-    fetch(`${process.env.VUE_APP_API_URL}/punishments/list?page=${page.value}`, {
+    fetch(api(`/punishments/list?page=${page.value}`), {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

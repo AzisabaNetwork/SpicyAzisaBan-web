@@ -34,6 +34,8 @@ const punishments = ref([])
 const hasNext = ref(false)
 const disableFetchMoreButton = ref(false)
 
+console.log('Environment variables', process.env)
+
 export default {
   components: {
     Button,

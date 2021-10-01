@@ -11,7 +11,7 @@
           :reason="p.reason"
           :duration="p.end - p.start"
           :server="p.server"
-          :unpunished="p.unpunished"
+          :unpunished="p.unpunished || !p.active || (p.end > 0 && p.end < Date.now())"
           style="cursor: pointer"
           @click="redirectTo(p.id)"
       />

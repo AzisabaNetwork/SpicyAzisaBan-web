@@ -1,14 +1,14 @@
 <template>
-  <table class="responsive-table table-fixed striped">
+  <table class="responsive-table table-fixed striped" style="table-layout: fixed;">
     <thead>
       <tr>
-        <th>#ID</th>
-        <th>種類</th>
-        <th>名前/IP</th>
+        <th style="width: 6%">#ID</th>
+        <th style="width: 12ch;">種類</th>
+        <th style="width: 18ch;">名前/IP</th>
         <th>理由</th>
-        <th>期間</th>
-        <th>サーバー</th>
-        <th></th>
+        <th style="width: 16ch;">期間</th>
+        <th style="width: 10ch;">サーバー</th>
+        <th style="width: 86px;"></th>
       </tr>
     </thead>
     <tbody>

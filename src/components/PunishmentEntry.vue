@@ -3,15 +3,15 @@
     <td>#{{ id }}</td>
     <td><PunishmentType :type="type" /></td>
     <td>{{ target }}</td>
-    <td>{{ reason }}</td>
+    <td style="white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" :title="reason">{{ reason }}</td>
     <td><Time :time="duration" /></td>
     <td>{{ server }}</td>
     <td>
       <Link color="teal-but-green" :href="`/punishments/view/?id=${id}`">
-        <MdIcon classes="right clickable-icon" style="transform: scale(1.15); margin-right: 15px; padding: 3px;" icon="article" />
+        <MdIcon classes="right clickable-icon" style="transform: scale(1.15); margin-right: 15px; padding: 3px; margin-left: 0;" icon="article" />
       </Link>
       <Link color="teal-but-green" :href="`/punishments/view/?id=${id}&edit`">
-        <MdIcon classes="right clickable-icon" style="padding: 3px;" icon="edit" />
+        <MdIcon classes="right clickable-icon" style="padding: 3px; margin-left: 0;" icon="edit" />
       </Link>
     </td>
   </tr>

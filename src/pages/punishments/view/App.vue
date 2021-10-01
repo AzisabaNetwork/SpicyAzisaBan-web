@@ -239,6 +239,7 @@ export default {
           // @ts-ignore
           M.Materialbox.init(elems) // eslint-disable-line no-undef
         }, 10)
+        punishment.value.proofs = punishment.value.proofs.filter(p => p.id !== -1)
       }
       this.refreshDateTimePickers()
     },

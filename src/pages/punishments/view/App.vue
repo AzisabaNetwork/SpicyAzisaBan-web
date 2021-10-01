@@ -234,14 +234,17 @@ export default {
     onEditButtonClick() {
       editing.value = !editing.value
       if (!editing.value) {
-        setTimeout(() => {
-          const elems = document.querySelectorAll('.materialboxed')
-          // @ts-ignore
-          M.Materialbox.init(elems) // eslint-disable-line no-undef
-        }, 10)
+        this.fixMaterialBox()
         punishment.value.proofs = punishment.value.proofs.filter(p => p.id !== -1)
       }
       this.refreshDateTimePickers()
+    },
+    fixMaterialBox() {
+      setTimeout(() => {
+        const elems = document.querySelectorAll('.materialboxed')
+        // @ts-ignore
+        M.Materialbox.init(elems) // eslint-disable-line no-undef
+      }, 10)
     },
     refreshDateTimePickers() {
       setTimeout(() => {
@@ -300,7 +303,10 @@ export default {
         })
         toast('処罰データを更新しました。')
         editing.value = false
-      }).finally(() => isUpdatingData.value = false)
+      }).finally(() => {
+        isUpdatingData.value = false
+        this.fixMaterialBox()
+      })
     },
   },
   setup() {
@@ -333,6 +339,9 @@ export default {
         punishment.value = data['data']
         editing.value = params.has('edit')
         spinnerActive.value = false
+        const elems = document.querySelectorAll('.materialboxed')
+        // @ts-ignore
+        M.Materialbox.init(elems) // eslint-disable-line no-undef
       })
     } else {
       toast(`処罰ID #${id}が見つかりません。`)

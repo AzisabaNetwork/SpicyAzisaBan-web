@@ -124,7 +124,7 @@ export const openModal = (element: HTMLElement) => {
 }
 
 export const api = (path: string) => {
-  const canOverrideAPIRoot = process.env.NODE_ENV === 'development'
+  const canOverrideAPIRoot = process.env.NODE_ENV === 'development' || (location.origin.startsWith('https://') && location.origin.endsWith('.pages.dev'))
   // if api root can be overridden, try using localStorage first
   let apiRoot = localStorage.getItem("spicyazisaban-api-url-override")
   // if api root can not be overridden or result of localStorage is null, use default api url defined in environment variable

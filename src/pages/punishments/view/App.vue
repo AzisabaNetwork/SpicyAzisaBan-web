@@ -89,7 +89,7 @@
         </FlippedTable>
       </div>
       <div class="col s1">
-        <table class="responsive-table actions-table">
+        <table class="actions-table">
           <thead>
             <tr>
               <th>操作</th>

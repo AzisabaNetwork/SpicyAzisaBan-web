@@ -23,7 +23,7 @@
   </nav>
   <ul class="sidenav" id="mobile-nav" style="z-index: 1000;">
     <slot />
-    <li id="log-in-out-mobile">
+    <li id="log-in-out-mobile" v-if="!loggedIn">
       <a onclick="M.Modal.getInstance(document.getElementById('login-modal')).open()" class="flex-center">ログイン<i class="material-icons" style="color: #0f0; margin-left: 10px;">login</i></a>
     </li>
     <li v-show="loggedIn"><DropdownTrigger :text="username || 'SpicyAzisaBan'" target="account-menu-mobile" /></li>

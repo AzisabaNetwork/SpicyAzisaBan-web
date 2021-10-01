@@ -57,7 +57,7 @@
           <h2>2段階認証</h2>
           <div class="row">
             <div class='col s12'>
-              <p>現在{{ mfa_enabled ? '有効' : '無効' }}になっています。</p>
+              <p>現在{{ me.mfa_enabled ? '有効' : '無効' }}になっています。</p>
             </div>
             <InputTextField
                 label="現在のパスワード"
@@ -67,17 +67,34 @@
                 ref="me_mfa_password"
                 type="password"
                 :disabled="disableForm"
-                v-if="!mfa_enabled"
+                v-if="!me.mfa_enabled"
             />
             <div class='col s12'>
               <Button
                   type='submit'
                   color='green submit-button'
                   @click='toggleMFA()'
-                  :text="mfa_enabled ? '無効化' : '有効化'"
+                  :text="me.mfa_enabled ? '無効化' : '有効化'"
                   :disabled="disableForm"
               />
             </div>
+          </div>
+        </Card>
+        <Card>
+          <h2>アカウント連携</h2>
+          <p>アカウント連携: {{ me.linked_uuid ? 'オン' : 'オフ' }}</p>
+          <Dummy v-if="me.linked_uuid">
+            <p>連携されているUUID: {{ me.linked_uuid }}</p>
+            <p>連携されている名前: {{ me.linked_name }}</p>
+          </Dummy>
+          <div class="col s12">
+            <Button
+                type='submit'
+                color="green submit-button"
+                @click="toggleAccountLink()"
+                :text="me.linked_uuid ? '連携解除' : '連携'"
+                :disable="disableForm"
+            />
           </div>
         </Card>
       </div>
@@ -103,6 +120,16 @@
       <Button color="modal-close green" text="OK" />
     </ModalFooter>
   </Modal>
+  <Modal id="me_link_account" :dismissible="false">
+    <ModalContent>
+      <h4>アカウント連携</h4>
+      <p>サーバーに参加して、<span class='code' ref="me_link_account_code"></span>と打つと連携が可能です。</p>
+      <p>このコードは10分間有効です。10分が過ぎると再度連携ボタンをクリックする必要があります。</p>
+    </ModalContent>
+    <ModalFooter>
+      <Button color="modal-close green" text="OK" @click="refreshUserStatus()" />
+    </ModalFooter>
+  </Modal>
 </template>
 
 <script lang="ts">
@@ -117,11 +144,13 @@ import Card from '@/components/Card.vue'
 import Modal from '@/components/Modal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
+import Dummy from '@/components/Dummy.vue'
 
 const refCodes = ref([])
 
 export default {
   components: {
+    Dummy,
     ModalFooter,
     ModalContent,
     Modal,
@@ -218,7 +247,7 @@ export default {
         this.disableForm = false
       })
     },
-    refreshMFAStatus() {
+    refreshUserStatus() {
       return fetch(api('/i_users/me'), {
         headers: {
           'Accept': 'application/json',
@@ -230,14 +259,13 @@ export default {
           return
         }
         this.me = res
-        this.mfa_enabled = this.me.mfa_enabled
         console.log(res)
         return res
       })
     },
     toggleMFA() {
       this.disableForm = true
-      this.refreshMFAStatus().then(res => {
+      this.refreshUserStatus().then(res => {
         if (res.mfa_enabled) {
           const token = prompt('現在の2FA認証コードもしくは復旧コード')
           if (!token) return this.disableForm = false
@@ -261,7 +289,7 @@ export default {
               return
             }
             toast('2FAを無効化しました。')
-            this.refreshMFAStatus()
+            this.refreshUserStatus()
           }).finally(() => {
             this.disableForm = false
           })
@@ -287,7 +315,7 @@ export default {
               return
             }
             toast('2FAを有効化しました。')
-            this.refreshMFAStatus()
+            this.refreshUserStatus()
             this.showMFAModal(res.secret_key, res.recovery_codes, res.qrcode)
           }).finally(() => {
             this.disableForm = false
@@ -309,9 +337,55 @@ export default {
       this.$refs.me_mfa_modal_secret.textContent = key
       openModal(document.getElementById('me_mfa_modal'))
     },
+    toggleAccountLink() {
+      this.disableForm = true
+      this.refreshUserStatus().then(me => {
+        if (me.linked_uuid) {
+          // unlink
+          fetch(api('/i_users/unlink_account'), {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+            },
+          }).then(res => res.json()).then(res => {
+            if (res['error']) {
+              toast('不明なエラーが発生しました: ' + res['error'])
+              return
+            }
+            this.refreshUserStatus()
+            toast('連携を解除しました。')
+          }).finally(() => this.disableForm = false)
+        } else {
+          // link
+          fetch(api('/i_users/link_account'), {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+              'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+            },
+          }).then(res => res.json()).then(res => {
+            console.log(res)
+            if (res['error']) {
+              const error = res['error']
+              if (error === 'already_linked') {
+                toast('アカウントはすでに連携されています。')
+              } else {
+                toast('不明なエラーが発生しました: ' + error)
+              }
+              return
+            }
+            const code = res['link_code']
+            this.$refs.me_link_account_code.textContent = `/sab link ${code}`
+            openModal(document.getElementById('me_link_account'))
+          }).finally(() => this.disableForm = false)
+        }
+      })
+    },
   },
   setup() {
-    const mfa_enabled = ref(false)
     const me = ref(null)
     fetch(api('/i_users/me'), {
       headers: {
@@ -324,12 +398,10 @@ export default {
         return
       }
       me.value = res
-      mfa_enabled.value = res.mfa_enabled
       console.log(res)
     })
     return {
       me,
-      mfa_enabled,
       recoveryCodes: '',
       codes: refCodes,
     }

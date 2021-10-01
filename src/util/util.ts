@@ -124,6 +124,16 @@ export const openModal = (element: HTMLElement) => {
 }
 
 export const api = (path: string) => {
-  const apiRoot = localStorage.getItem("spicyazisaban-api-url-override") || process.env.VUE_APP_API_URL
+  const canOverrideAPIRoot = process.env.NODE_ENV === 'development'
+  // if api root can be overridden, try using localStorage first
+  let apiRoot = localStorage.getItem("spicyazisaban-api-url-override")
+  // if api root can not be overridden or result of localStorage is null, use default api url defined in environment variable
+  if (!canOverrideAPIRoot && apiRoot) {
+    console.warn('Cannot override API URL because this build is production')
+    apiRoot = process.env.VUE_APP_API_URL
+  }
+  if (!apiRoot) {
+    apiRoot = process.env.VUE_APP_API_URL
+  }
   return `${apiRoot}${path}`
 }

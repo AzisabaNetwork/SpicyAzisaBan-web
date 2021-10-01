@@ -6,7 +6,7 @@
         <th style="width: 12ch;">種類</th>
         <th style="width: 18ch;">名前/IP</th>
         <th>理由</th>
-        <th style="width: 16ch;">期間</th>
+        <th style="width: 18ch;">期間</th>
         <th style="width: 10ch;">サーバー</th>
         <th style="width: 86px;"></th>
       </tr>

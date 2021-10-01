@@ -1,5 +1,5 @@
 <template>
-  <table class="responsive-table table-fixed striped" style="table-layout: fixed;">
+  <table class="table-fixed striped" style="table-layout: fixed;">
     <thead>
       <tr>
         <th style="width: 6%">#ID</th>

@@ -12,6 +12,8 @@
           :duration="p.end - p.start"
           :server="p.server"
           :unpunished="p.unpunished"
+          style="cursor: pointer"
+          @click="redirectTo(p.id)"
       />
     </PunishmentEntriesList>
     <Button text="さらに取得" @click="fetchMore" :disabled="disableFetchMoreButton || !hasNext" />
@@ -58,7 +60,10 @@ export default {
         hasNext.value = res['hasNext']
         punishments.value = punishments.value.concat(data)
       }).finally(() => disableFetchMoreButton.value = false)
-    }
+    },
+    redirectTo(id: number) {
+      location.href = `/punishments/view?id=${id}`
+    },
   },
   setup() {
     fetch(`${process.env.VUE_APP_API_URL}/punishments/list?page=${page.value}`, {

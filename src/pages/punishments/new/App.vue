@@ -228,6 +228,23 @@ export default {
 .select-dropdown {
   color: #2ec7b9;
 }
+
+.dropdown-content {
+  background-color: #22282a;
+  border-radius: 0 0 20px 20px;
+}
+.dropdown-content li > a, .dropdown-content li > span {
+  color: #2ec7b9;
+}
+.dropdown-content li:hover, .dropdown-content li.active {
+  background-color: inherit;
+}
+.select-dropdown.dropdown-content li.selected {
+  background-color: #52585a;
+}
+.select-dropdown.dropdown-content li.selected:hover {
+  background-color: rgba(0,0,0,0.08);
+}
 </style>
 
 <style scoped>

@@ -146,7 +146,7 @@ export default {
       const end = this.isTemp
           ? new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`).getTime()
           : -1
-      if (isNaN(end) || end < start) return toast('期限切れ日時が無効です。')
+      if (isNaN(end) || (end !== -1 && end < start)) return toast('期限切れ日時が無効です。')
       if (!this.$refs.reason.value) return toast('理由が空です。')
       this.disableForm = true
       fetch(api('/punishments/create'), {

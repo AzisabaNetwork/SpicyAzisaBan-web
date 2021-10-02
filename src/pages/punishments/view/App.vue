@@ -27,7 +27,7 @@
                   id="end-date-picker"
                   input-class="datepicker"
                   :default-value="dateToDateString(new Date(punishment.end))"
-                  label="期限切れ日時 (DD/MM/YYYY)"
+                  label="期限切れ日時 (YYYY/MM/DD)"
                   ref="end-date-picker"
                   active-label
                   white-text
@@ -173,7 +173,6 @@ const editing = ref(false)
 const isUpdatingData = ref(false)
 const punishment = ref(null)
 const isPerm = ref(false)
-const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
 export default {
   components: {
@@ -204,7 +203,7 @@ export default {
       return punishment.value.type.includes('TEMP_')
     },
     dateToDateString(date: Date) {
-      return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+      return `${date.getFullYear()}/${zero(2, (date.getMonth() + 1).toString())}/${zero(2, date.getDate().toString())}`
     },
     dateToTimeString(date: Date) {
       let hours = date.getHours()
@@ -225,7 +224,7 @@ export default {
       }
     },
     onEndDateTimeChange() {
-      const date = new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`)
+      const date = new Date(`${this.$refs['end-date-picker'].value || ''} ${this.$refs['end-time-picker'].value || ''}`)
       const time = date.getTime() - punishment.value.start
       this.$refs.duration.value = this.unProcessTime3(time)
       this.$refs['end-date-picker'].value = this.dateToDateString(date)

@@ -135,7 +135,7 @@ export default {
       }
     },
     onEndDateTimeChange() {
-      const date = new Date(`${this.$refs['end-date-picker'].value} ${this.$refs['end-time-picker'].value}`)
+      const date = new Date(`${this.$refs['end-date-picker'].value || ''} ${this.$refs['end-time-picker'].value || ''}`)
       const time = date.getTime() - start
       this.$refs.duration.value = this.unProcessTime3(time)
       this.$refs['end-date-picker'].value = this.dateToDateString(date)

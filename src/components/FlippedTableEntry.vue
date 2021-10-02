@@ -5,7 +5,7 @@
         {{ k }}
       </span>
     </div>
-    <div class="col" :class="`s${vs || 7}`">
+    <div class="col" :class="`s${vs || 7}`" :style="vstyle">
       <span class="flow-text" :class="vc">
         {{ v }}
         <slot />
@@ -23,6 +23,7 @@ export default {
     v: String,
     kc: String,
     vc: String,
+    vstyle: String,
   },
 }
 </script>

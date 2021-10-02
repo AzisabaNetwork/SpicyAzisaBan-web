@@ -1,5 +1,6 @@
 <template>
   <NavWrapper :logged-in="loggedIn" :username="username">
+    <li><Link href="/punishments/new" style="display: inline-flex; width: 100%;"><MdIcon icon="add" />処罰を追加</Link></li>
     <li><Link href="/">処罰履歴</Link></li>
   </NavWrapper>
   <AccountMenu>
@@ -30,6 +31,7 @@ import ModalContent from "@/components/ModalContent.vue";
 import ModalFooter from "@/components/ModalFooter.vue";
 import NavWrapper from "@/components/NavWrapper.vue";
 import {api} from '@/util/util'
+import MdIcon from '@/components/MdIcon.vue'
 
 function toast(text: string) {
   // @ts-ignore
@@ -47,7 +49,7 @@ const user = ref({
 })
 
 function refreshLoginStatus() {
-  fetch(api('/i_users/me'), {
+  return fetch(api('/i_users/me'), {
     headers: {
       'Accept': 'application/json',
       'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
@@ -64,6 +66,7 @@ function refreshLoginStatus() {
     }
     user.value = data
     username.value = data['username']
+    return data
   })
 }
 
@@ -71,6 +74,7 @@ export default {
   props: {
     dismissibleLoginModal: Boolean,
   },
+  emits: ['meUpdated'],
   methods: {
     doRegister() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
@@ -168,6 +172,7 @@ export default {
     },
   },
   components: {
+    MdIcon,
     NavWrapper,
     ModalFooter,
     ModalContent,
@@ -185,8 +190,10 @@ export default {
       disableForm: false,
     }
   },
-  setup() {
-    refreshLoginStatus()
+  setup(props, { emit }) {
+    refreshLoginStatus().then(res => {
+      emit('meUpdated', res)
+    })
   },
 }
 

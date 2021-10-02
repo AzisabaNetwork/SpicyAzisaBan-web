@@ -137,3 +137,8 @@ export const api = (path: string) => {
   }
   return `${apiRoot}${path}`
 }
+
+export const autoInitM = () => {
+  // @ts-ignore
+  M.AutoInit() // eslint-disable-line no-undef
+}

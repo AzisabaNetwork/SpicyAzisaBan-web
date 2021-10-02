@@ -236,6 +236,9 @@ export default {
         this.fixMaterialBox()
         punishment.value.proofs = punishment.value.proofs.filter(p => p.id !== -1)
       }
+      let extra = ''
+      if (editing.value) extra = '&edit'
+      history.replaceState({}, document.title, `${location.origin}/punishments/view?id=${punishment.value.id}${extra}`)
       this.refreshDateTimePickers()
     },
     fixMaterialBox() {

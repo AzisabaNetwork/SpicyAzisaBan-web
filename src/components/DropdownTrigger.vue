@@ -1,5 +1,5 @@
 <template>
-  <a class='dropdown-trigger' :data-target="target">{{ text }}</a>
+  <a class='dropdown-trigger' :data-target="target" ref="it">{{ text }}</a>
 </template>
 
 <script lang="ts">
@@ -8,14 +8,14 @@ export default {
     text: String,
     target: String,
   },
-  setup() {
+  mounted() {
     setTimeout(() => {
       // @ts-expect-error
-      M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), { // eslint-disable-line no-undef
+      M.Dropdown.init(this.$refs.it, { // eslint-disable-line no-undef
         coverTrigger: false,
         hover: true,
       })
-    }, 150)
+    }, 100)
   },
 }
 </script>
@@ -35,7 +35,7 @@ export default {
   border-radius: 0 0 20px 20px;
 }
 
-.dropdown-content li>a, .dropdown-content li>span {
+.dropdown-content li > a, .dropdown-content li > span {
   color: #2ec7b9;
 }
 

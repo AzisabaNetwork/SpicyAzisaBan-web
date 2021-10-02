@@ -190,7 +190,7 @@ export default {
       }).catch(() => this.disableForm = false)
     },
     meUpdated() {
-      operator.value = this.$refs.navbar.user.username
+      operator.value = this.$refs.navbar.user.linked_name || '未連携'
     },
     updateElements() {
       const pType = (document.getElementById('p-type') as HTMLSelectElement).value

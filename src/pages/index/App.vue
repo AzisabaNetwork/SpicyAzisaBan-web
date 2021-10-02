@@ -12,7 +12,7 @@
           :duration="p.end - p.start"
           :server="p.server"
           :unpunished="p.unpunished || !p.active || (p.end > 0 && p.end < Date.now())"
-          style="cursor: pointer"
+          :style="{ cursor: 'pointer', 'background-color': highlight.includes(p.id) ? 'rgba(255, 255, 0, 0.2)' : null }"
           @click="redirectTo(p.id)"
       />
     </PunishmentEntriesList>
@@ -35,6 +35,8 @@ const hasNext = ref(false)
 const disableFetchMoreButton = ref(false)
 
 console.log('Environment variables', process.env)
+
+const highlight = ref([])
 
 export default {
   components: {
@@ -89,9 +91,40 @@ export default {
       punishments,
       hasNext,
       disableFetchMoreButton,
+      highlight,
     }
   },
 }
+
+const checkHash = () => {
+  const match = location.href.match(/(.*?)#(.*)/)
+  if (match && match[2]) {
+    highlight.value = match[2].split(',').flatMap(s => {
+      const match2 = s.match(/(\d+)-(\d+)/)
+      if (match2) {
+        const arr = []
+        const i1 = parseInt(match2[1])
+        const i2 = parseInt(match2[2])
+        if (i1 <= i2) {
+          for (let i = i1; i <= i2; i++) {
+            arr.push(i)
+          }
+        } else {
+          for (let i = i2; i <= i1; i++) {
+            arr.push(i)
+          }
+        }
+        return arr
+      } else {
+        return [ parseInt(s, 10) ]
+      }
+    }).filter(i => i > 0)
+  }
+}
+
+checkHash()
+
+addEventListener('hashchange', () => checkHash())
 </script>
 
 <style>

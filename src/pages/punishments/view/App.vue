@@ -98,14 +98,21 @@
           <tbody>
             <tr>
               <td>
-                <Link style="display: block; cursor: pointer;" :class="'editing-' + editing.toString()" @click="onEditButtonClick">
+                <Link style="display: block; cursor: pointer;" :class="'editing-' + editing.toString()" @click="onEditButtonClick" title="編集">
                   <MdIcon icon="edit" />
+                </Link>
+              </td>
+            </tr>
+            <tr v-if="!editing && punishment.active">
+              <td>
+                <Link style="display: block; cursor: pointer;" @click="openUnpunishModal" title="処罰を解除">
+                  <MdIcon icon="block" />
                 </Link>
               </td>
             </tr>
             <tr v-if="editing">
               <td>
-                <Link style="display: block;" :class="'update-button-' + isUpdatingData.toString()" @click="updateData()">
+                <Link style="display: block;" :class="'update-button-' + isUpdatingData.toString()" @click="updateData" title="保存">
                   <MdIcon icon="save" />
                 </Link>
               </td>
@@ -150,6 +157,23 @@
       </FlippedTable>
     </div>
   </Container>
+  <Modal :dismissible="true" id="unpunish-modal">
+    <ModalContent title="処罰の解除">
+      <InputTextField
+          id="unpunish-reason"
+          ref="unpunishReason"
+          type="text"
+          :min-length="1"
+          :max-length="255"
+          :disabled="isUpdatingData"
+          placeholder="解除理由"
+      />
+    </ModalContent>
+    <ModalFooter>
+      <Button color="modal-close green" text="閉じる" :disabled="isUpdatingData" />
+      <Button color="red accent-4" text="解除" @click="onUnpunishButtonClick" :disabled="isUpdatingData" />
+    </ModalFooter>
+  </Modal>
 </template>
 
 <script lang="ts">
@@ -167,7 +191,11 @@ import Dummy from '@/components/Dummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import MdImage from '@/components/MdImage.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import {api, processTime, toast, unProcessTime3, zero} from '@/util/util'
+import { api, openModal, processTime, toast, unProcessTime3, zero } from '@/util/util'
+import Modal from '@/components/Modal.vue'
+import ModalContent from '@/components/ModalContent.vue'
+import ModalFooter from '@/components/ModalFooter.vue'
+import Button from '@/components/Button.vue'
 
 const editing = ref(false)
 const isUpdatingData = ref(false)
@@ -176,6 +204,10 @@ const isPerm = ref(false)
 
 export default {
   components: {
+    Button,
+    ModalFooter,
+    ModalContent,
+    Modal,
     MdImage,
     MdIcon,
     Dummy,
@@ -285,8 +317,15 @@ export default {
           proofs: punishment.value.proofs.map(p => ({ id: p.id, value: this.$refs[`proof-${p.id}`].value })),
         }),
       }).then(res => res.json()).then(async res => {
-        if (res['error']) {
-          toast(`処罰データの更新に失敗しました: ${res['error']}`)
+        const err = res['error']
+        if (err) {
+          if (err === 'not_found') {
+            toast('処罰が見つかりません。')
+          } else if (err === 'missing_permissions') {
+            toast('この処罰を変更する権限がありません。')
+          } else {
+            toast(`処罰データの更新に失敗しました: ${err}`)
+          }
           return
         }
         await fetch(api(`/punishments/get/${punishment.value.id}`), {
@@ -308,6 +347,47 @@ export default {
       }).finally(() => {
         isUpdatingData.value = false
         this.fixMaterialBox()
+      })
+    },
+    openUnpunishModal() {
+      openModal(document.getElementById('unpunish-modal'))
+    },
+    onUnpunishButtonClick() {
+      if (this.isUpdatingData) return
+      const reason = this.$refs.unpunishReason.value || ''
+      if (!reason || reason.length === 0) return toast('理由が空です。')
+      if (reason.length > 255) return toast('理由が長すぎます。')
+      this.isUpdatingData = true
+      fetch(api('/punishments/unpunish'), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
+        },
+        body: JSON.stringify({
+          id: punishment.value.id,
+          reason,
+        }),
+      }).then(res => res.json()).then(res => {
+        const err = res['error']
+        if (err) {
+          if (err === 'not_found') {
+            toast('処罰が見つかりません。')
+          } else if (err === 'already_unpunished') {
+            toast('この処罰はすでに解除されています。')
+          } else if (err === 'missing_permissions') {
+            toast('この処罰を変更する権限がありません。')
+          } else if (err === 'not_linked') {
+            toast('アカウントが連携されていません。')
+          } else {
+            toast('処罰を解除できませんでした: ' + err)
+          }
+          this.isUpdatingData = false
+          return
+        }
+        toast('処罰を解除しました。')
+        setTimeout(() => location.reload(), 2000)
       })
     },
   },

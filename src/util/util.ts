@@ -123,6 +123,11 @@ export const openModal = (element: HTMLElement) => {
   M.Modal.getInstance(element).open() // eslint-disable-line no-undef
 }
 
+export const closeModal = (element: HTMLElement) => {
+  // @ts-ignore
+  M.Modal.getInstance(element).clone() // eslint-disable-line no-undef
+}
+
 export const api = (path: string) => {
   const canOverrideAPIRoot = process.env.NODE_ENV === 'development' || (location.origin.startsWith('https://') && location.origin.endsWith('.pages.dev'))
   // if api root can be overridden, try using localStorage first

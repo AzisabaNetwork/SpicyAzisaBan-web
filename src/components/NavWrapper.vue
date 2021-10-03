@@ -14,6 +14,7 @@
                 label="検索"
                 id="search"
                 ref="search"
+                name="q"
                 :white-text="true"
                 :input-style="{'border-bottom': '1px solid #26a69a'}"
                 :label-style="{top: '-5px'}"

@@ -3,6 +3,7 @@
     <input
         :id="id"
         :type="type || 'text'"
+        :name="name"
         class="validate"
         :minlength=minLength
         :maxlength=maxLength
@@ -50,6 +51,7 @@ export default {
     divClass: String,
     disabled: Boolean,
     labelRef: String,
+    name: String,
   },
   emits: ['input'],
   methods: {

@@ -11,6 +11,7 @@
         <div style="justify-content: center; width: 30%;" v-if="loggedIn">
           <InputTextField
               label="検索"
+              type="search"
               id="search"
               ref="search"
               :white-text="true"

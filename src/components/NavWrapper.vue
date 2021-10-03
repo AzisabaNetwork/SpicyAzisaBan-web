@@ -7,9 +7,18 @@
       <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
       <div class="hide-on-med-and-down" style="display: flex;">
         <div style="margin-left: 10%; margin-right: 10%;"></div>
-        <div style="margin: auto" v-if="false && loggedIn"></div>
-        <div style="justify-content: center; width: 30%;" v-if="false && loggedIn">
-          <InputTextField label="検索" id="search" ref="search" :white-text="true" input-style="border-bottom: 1px solid #26a69a" label-style="top: -5px" />
+        <div style="margin: auto" v-if="loggedIn"></div>
+        <div style="justify-content: center; width: 30%;" v-if="loggedIn">
+          <InputTextField
+              label="検索"
+              id="search"
+              ref="search"
+              :white-text="true"
+              :input-style="{'border-bottom': '1px solid #26a69a'}"
+              :label-style="{top: '-5px'}"
+              :default-value="defaultSearchWord"
+              @input="fireInputEvent"
+          />
         </div>
         <div style="margin: auto"></div>
         <ul id="nav-mobile" class="hide-on-med-and-down right" style="justify-content: flex-end;">
@@ -35,10 +44,17 @@
   </ul>
 </template>
 
-<script>
-import DropdownTrigger from "@/components/DropdownTrigger"
-import InputTextField from "@/components/InputTextField"
-import Dummy from '@/components/Dummy'
+<script lang="ts">
+import DropdownTrigger from "@/components/DropdownTrigger.vue"
+import InputTextField from "@/components/InputTextField.vue"
+import Dummy from '@/components/Dummy.vue'
+
+const enterKeyListener = (e: KeyboardEvent) => {
+  if (e.key !== 'Enter') return
+  const searchBarActive = document.getElementById('search') === document.activeElement
+  if (!searchBarActive) return
+  location.href = `/search?q=${encodeURI((document.getElementById('search') as HTMLInputElement).value || '')}`
+}
 
 export default {
   components: {
@@ -49,6 +65,19 @@ export default {
   props: {
     loggedIn: Boolean,
     username: String,
+    defaultSearchWord: String,
+  },
+  emits: ['search-input'],
+  methods: {
+    fireInputEvent(event) {
+      this.$emit('search-input', event)
+    },
+  },
+  unmounted() {
+    document.removeEventListener('keypress', enterKeyListener)
+  },
+  mounted() {
+    document.addEventListener('keypress', enterKeyListener)
   },
 }
 </script>

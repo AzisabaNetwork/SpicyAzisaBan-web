@@ -1,5 +1,5 @@
 <template>
-  <NavWrapper :logged-in="loggedIn" :username="username">
+  <NavWrapper :logged-in="loggedIn" :username="username" :default-search-word="defaultSearchWord" @search-input="fireSearchInputEvent">
     <template v-slot:common>
       <li><Link href="/punishments/new" style="display: inline-flex; width: 100%;"><MdIcon icon="add" />処罰を追加</Link></li>
       <li><Link href="/">処罰履歴</Link></li>
@@ -74,9 +74,13 @@ function refreshLoginStatus() {
 export default {
   props: {
     dismissibleLoginModal: Boolean,
+    defaultSearchWord: String,
   },
-  emits: ['meUpdated'],
+  emits: ['meUpdated', 'search-input'],
   methods: {
+    fireSearchInputEvent(event) {
+      this.$emit('search-input', event)
+    },
     doRegister() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
       if (this.$refs.password.value.length < 7) return

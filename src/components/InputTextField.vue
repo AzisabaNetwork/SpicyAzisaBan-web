@@ -6,7 +6,7 @@
         class="validate"
         :minlength=minLength
         :maxlength=maxLength
-        :ref="ref"
+        :ref="ref || 'input'"
         v-model="value"
         :pattern="pattern"
         :class="[whiteText ? 'white-text' : '', inputClass]"
@@ -14,11 +14,13 @@
         :placeholder="placeholder"
         :disabled="disabled"
         @change="update"
+        @input="fireInputEvent"
     />
     <label
         :for="id"
         :style="labelStyle"
         :class="activeLabel ? 'active' : null"
+        :ref="labelRef || 'label'"
     >{{ label }}</label>
   </div>
 </template>
@@ -47,11 +49,21 @@ export default {
     inputClass: String,
     divClass: String,
     disabled: Boolean,
+    labelRef: String,
   },
+  emits: ['input'],
   methods: {
     update(event) {
       this.value = event.target.value
     },
+    fireInputEvent(event) {
+      this.$emit('input', event)
+    },
+  },
+  mounted() {
+    if (this.defaultValue) {
+      this.$refs[this.labelRef || 'label'].classList.add('active')
+    }
   },
 }
 </script>

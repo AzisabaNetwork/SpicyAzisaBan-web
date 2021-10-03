@@ -20,5 +20,9 @@ module.exports = {
             entry: 'src/pages/me/main.ts',
             title: 'you | SpicyAzisaBan',
         },
+        search: {
+            entry: 'src/pages/search/main.ts',
+            title: 'search | SpicyAzisaBan',
+        },
     }
 }

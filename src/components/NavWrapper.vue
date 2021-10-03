@@ -1,4 +1,7 @@
 <template>
+  <ul id='account-menu' class='dropdown-content'>
+    <slot name="menu" />
+  </ul>
   <nav>
     <div class="nav-wrapper">
       <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
@@ -10,25 +13,25 @@
         </div>
         <div style="margin: auto"></div>
         <ul id="nav-mobile" class="hide-on-med-and-down right" style="justify-content: flex-end;">
-          <Dummy v-if="loggedIn">
-            <slot />
-          </Dummy>
           <li id="log-in-out" class="tooltipped" data-position="bottom" data-tooltip="ログインしていません。クリックでログインできます。" v-if="!loggedIn">
             <a onclick="M.Modal.getInstance(document.getElementById('login-modal')).open()" class="flex-center">ログイン<i class="material-icons" style="color: #0f0; margin-left: 10px;">login</i></a>
           </li>
+          <Dummy v-if="loggedIn">
+            <slot name="common" />
+          </Dummy>
           <li v-show="loggedIn"><DropdownTrigger :text="username || 'SpicyAzisaBan'" target="account-menu" /></li>
         </ul>
       </div>
     </div>
   </nav>
   <ul class="sidenav" id="mobile-nav" style="z-index: 1000;">
-    <Dummy v-if="loggedIn">
-      <slot />
-    </Dummy>
     <li id="log-in-out-mobile" v-if="!loggedIn">
       <a onclick="M.Modal.getInstance(document.getElementById('login-modal')).open()" class="flex-center">ログイン<i class="material-icons" style="color: #0f0; margin-left: 10px;">login</i></a>
     </li>
-    <li v-show="loggedIn"><DropdownTrigger :text="username || 'SpicyAzisaBan'" target="account-menu-mobile" /></li>
+    <Dummy v-if="loggedIn">
+      <slot name="common" />
+      <slot name="menu" />
+    </Dummy>
   </ul>
 </template>
 

@@ -1,12 +1,14 @@
 <template>
   <NavWrapper :logged-in="loggedIn" :username="username">
-    <li><Link href="/punishments/new" style="display: inline-flex; width: 100%;"><MdIcon icon="add" />処罰を追加</Link></li>
-    <li><Link href="/">処罰履歴</Link></li>
+    <template v-slot:common>
+      <li><Link href="/punishments/new" style="display: inline-flex; width: 100%;"><MdIcon icon="add" />処罰を追加</Link></li>
+      <li><Link href="/">処罰履歴</Link></li>
+    </template>
+    <template v-slot:menu>
+      <li><Link href="/me">設定</Link></li>
+      <li><Link @click="doLogout()">ログアウト</Link></li>
+    </template>
   </NavWrapper>
-  <AccountMenu>
-    <li><Link href="/me">設定</Link></li>
-    <li><Link @click="doLogout()">ログアウト</Link></li>
-  </AccountMenu>
   <Modal id="login-modal" :dismissible="dismissibleLoginModal">
     <ModalContent title="ログイン / 登録">
       <InputTextField :min-length=5 type="email" label="メールアドレス" id="navbar_email" ref="email"/>
@@ -25,7 +27,6 @@ import { ref } from "vue"
 import InputTextField from './InputTextField.vue'
 import Button from './Button.vue'
 import Link from './Link.vue'
-import AccountMenu from "@/components/AccountMenu.vue"
 import Modal from "@/components/Modal.vue";
 import ModalContent from "@/components/ModalContent.vue";
 import ModalFooter from "@/components/ModalFooter.vue";
@@ -177,7 +178,6 @@ export default {
     ModalFooter,
     ModalContent,
     Modal,
-    AccountMenu,
     InputTextField,
     Button,
     Link,

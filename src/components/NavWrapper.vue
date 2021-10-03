@@ -9,16 +9,18 @@
         <div style="margin-left: 10%; margin-right: 10%;"></div>
         <div style="margin: auto" v-if="loggedIn"></div>
         <div style="justify-content: center; width: 30%;" v-if="loggedIn">
-          <InputTextField
-              label="検索"
-              id="search"
-              ref="search"
-              :white-text="true"
-              :input-style="{'border-bottom': '1px solid #26a69a'}"
-              :label-style="{top: '-5px'}"
-              :default-value="defaultSearchWord"
-              @input="fireInputEvent"
-          />
+          <form action="/search" method="get">
+            <InputTextField
+                label="検索"
+                id="search"
+                ref="search"
+                :white-text="true"
+                :input-style="{'border-bottom': '1px solid #26a69a'}"
+                :label-style="{top: '-5px'}"
+                :default-value="defaultSearchWord"
+                @input="fireInputEvent"
+            />
+          </form>
         </div>
         <div style="margin: auto"></div>
         <ul id="nav-mobile" class="hide-on-med-and-down right" style="justify-content: flex-end;">

@@ -2,10 +2,10 @@
   <table class="table-fixed striped" style="table-layout: fixed;">
     <thead>
       <tr>
-        <th style="width: 16ch;">プレイヤー</th>
-        <th style="width: 32ch;">UUID</th>
-        <th style="width: 20ch;">IPアドレス</th>
-        <th style="width: 20ch;">最終参加</th>
+        <th style="width: 8ch;">ID</th>
+        <th style="width: 32ch;">ユーザー名</th>
+        <th style="width: 32ch;">メールアドレス</th>
+        <th style="width: 8ch;">グループ</th>
       </tr>
     </thead>
     <tbody>

@@ -3,9 +3,18 @@
       :dismissible-login-modal="true"
       :default-search-word="getSearchWord()"
       @search-input="handleSearchInputEvent"
+      @me-updated="onMeUpdated"
   />
   <Container>
     <ul style="display: inline-flex; align-items: center;">
+      <li v-if="group === 'admin'">
+        <MdIcon
+            icon="badge"
+            classes="clickable-icon type-icon"
+            :style="{ 'background-color': isSelected('users') ? 'rgba(0, 255, 0, 0.3)' : null }"
+            @click="toggleSearchType('users')"
+        />
+      </li>
       <li>
         <MdIcon
             icon="person"
@@ -23,6 +32,21 @@
         />
       </li>
     </ul>
+    <Dummy v-if="group === 'admin' && isSelected('users')">
+      <h2>ユーザー ({{ result.users.length }})</h2>
+      <UserEntriesList>
+        <UserEntry
+            v-for="p in result.users"
+            :key="p.id"
+            :id="p.id"
+            :username="p.username"
+            :email="p.email"
+            :group="p.group"
+            :style="{ 'background-color': p.exactMatch ? 'rgba(0, 255, 0, 0.2)' : null, cursor: 'pointer' }"
+            @click="redirectTo(`/admin/users?id=${p.id}`)"
+        />
+      </UserEntriesList>
+    </Dummy>
     <Dummy v-if="isSelected('players')">
       <h2>プレイヤー ({{ result.players.length }})</h2>
       <PlayerEntriesList>
@@ -32,6 +56,7 @@
             :name="p.name"
             :uuid="p.uuid"
             :last-seen="p.last_seen"
+            :ip="p.ip"
             :style="{ 'background-color': p.exactMatch ? 'rgba(0, 255, 0, 0.2)' : null }"
         />
       </PlayerEntriesList>
@@ -50,7 +75,7 @@
             :server="p.server"
             :unpunished="p.unpunished || !p.active || (p.end > 0 && p.end < Date.now())"
             :style="{ cursor: 'pointer' }"
-            @click="redirectTo(p.id)"
+            @click="redirectTo(`/punishments/view?id=${p.id}`)"
         />
       </PunishmentEntriesList>
     </Dummy>
@@ -68,23 +93,31 @@ import PlayerEntriesList from '@/components/PlayerEntriesList.vue'
 import PlayerEntry from '@/components/PlayerEntry.vue'
 import Dummy from '@/components/Dummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
+import UserEntriesList from '@/components/UserEntriesList.vue'
+import UserEntry from '@/components/UserEntry.vue'
 
 const result = ref({
+  users: [],
   players: [],
   punishments: [],
 })
 
-function processResult(query: string, res: { players: any[], punishments: any[] }) {
+function processResult(query: string, res: { users: any[], players: any[], punishments: any[] }) {
   const lq = query.toLowerCase()
-  if (res.players) {
-    res.players = [
-      ...res.players.filter(p => p.name.toLowerCase() === lq || p.uuid.toLowerCase() === lq).map(p => {
-        p.exactMatch = true
-        return p
-      }),
-      ...res.players.filter(p => p.name.toLowerCase() !== lq && p.uuid.toLowerCase() !== lq),
-    ]
-  }
+  res.users = [
+    ...res.users.filter(p => p.username.toLowerCase() === lq || p.email.toLowerCase() === lq).map(p => {
+      p.exactMatch = true
+      return p
+    }),
+    ...res.users.filter(p => p.username.toLowerCase() !== lq && p.email.toLowerCase() !== lq),
+  ]
+  res.players = [
+    ...res.players.filter(p => p.name.toLowerCase() === lq || p.uuid.toLowerCase() === lq).map(p => {
+      p.exactMatch = true
+      return p
+    }),
+    ...res.players.filter(p => p.name.toLowerCase() !== lq && p.uuid.toLowerCase() !== lq),
+  ]
   console.log(res)
   result.value = res
 }
@@ -102,7 +135,7 @@ function search() {
   const query = params.get('q')
   readSearchType()
   if (!query) {
-    processResult('', { players: [], punishments: [] })
+    processResult('', { users: [], players: [], punishments: [] })
     return
   }
   console.log(searchType.value)
@@ -140,6 +173,8 @@ function readSearchType() {
 
 export default {
   components: {
+    UserEntry,
+    UserEntriesList,
     MdIcon,
     Dummy,
     PlayerEntry,
@@ -152,6 +187,7 @@ export default {
   data() {
     return {
       result,
+      group: 'user',
     }
   },
   methods: {
@@ -171,12 +207,15 @@ export default {
       const params = new URLSearchParams(window.location.search)
       return params.get('q')
     },
-    redirectTo(id: number) {
-      location.href = `/punishments/view?id=${id}`
+    redirectTo(url: string) {
+      location.href = url
     },
     handleSearchInputEvent(event) {
       history.replaceState({}, document.title, `${location.origin}/search?q=${encodeURI(event.target.value || '')}&types=${this.searchType.join(',')}`)
       searchDebounced()
+    },
+    onMeUpdated(me) {
+      this.group = me.group
     },
     search,
   },

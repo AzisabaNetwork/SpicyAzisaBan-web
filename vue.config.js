@@ -24,5 +24,9 @@ module.exports = {
             entry: 'src/pages/search/main.ts',
             title: 'search | SpicyAzisaBan',
         },
+        'admin/users': {
+            entry: 'src/pages/admin/users/main.ts',
+            title: 'users | SpicyAzisaBan',
+        },
     }
 }

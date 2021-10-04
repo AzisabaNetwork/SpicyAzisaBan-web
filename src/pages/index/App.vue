@@ -27,7 +27,7 @@ import PunishmentEntriesList from "@/components/PunishmentEntriesList.vue"
 import PunishmentEntry from "@/components/PunishmentEntry.vue"
 import Container from "@/components/Container.vue"
 import Button from "@/components/Button.vue"
-import {api} from '@/util/util'
+import { api, toast } from '@/util/util'
 
 const page = ref(0)
 const punishments = ref([])
@@ -90,6 +90,19 @@ export default {
       hasNext,
       disableFetchMoreButton,
       highlight,
+    }
+  },
+  mounted() {
+    const params = new URLSearchParams(location.search)
+    if (params.get('error')) {
+      const e = params.get('error')
+      if (e === 'not_logged_in') {
+        toast('エラー: ログインしてません。')
+      } else if (e === 'missing_permissions') {
+        toast('エラー: 権限がありません。')
+      } else {
+        toast('エラー: ' + e)
+      }
     }
   },
 }

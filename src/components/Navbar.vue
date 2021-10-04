@@ -57,13 +57,13 @@ function refreshLoginStatus() {
     },
   }).then(async res => {
     const data = await res.json()
-    const isError = !!(res.status !== 200 || data['error'])
-    loggedIn.value = !isError
-    if (isError) {
+    const isSuccess = res.status === 200 && !data['error']
+    loggedIn.value = isSuccess
+    if (!isSuccess) {
       if (data['error'] !== 'unauthorized') {
         toast('Unknown error fetching user data: ' + data['error'])
       }
-      return
+      return null
     }
     user.value = data
     username.value = data['username']

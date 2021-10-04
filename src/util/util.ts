@@ -128,6 +128,10 @@ export const closeModal = (element: HTMLElement) => {
   M.Modal.getInstance(element).clone() // eslint-disable-line no-undef
 }
 
+export const openLoginModal = () => {
+  setTimeout(() => openModal(document.getElementById('login-modal')), 100)
+}
+
 export const api = (path: string) => {
   const canOverrideAPIRoot = process.env.NODE_ENV === 'development' || (location.origin.startsWith('https://') && location.origin.endsWith('.pages.dev'))
   // if api root can be overridden, try using localStorage first
@@ -147,3 +151,5 @@ export const autoInitM = () => {
   // @ts-ignore
   M.AutoInit() // eslint-disable-line no-undef
 }
+
+export const getElementById = (id: string) => document.getElementById(id)

@@ -1,5 +1,5 @@
 <template>
-  <Navbar :dismissible-login-modal="true" ref="navbar" />
+  <Navbar :dismissible-login-modal="true" ref="navbar" @me-updated="onUserUpdated" />
   <Preloader size="big" :active="!me" color="spinner-blue-only" />
   <Container v-if="me">
     <div class="row">
@@ -139,7 +139,7 @@ import Container from '@/components/Container.vue'
 import Preloader from '@/components/Preloader.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import Button from '@/components/Button.vue'
-import {api, isValidName, openModal, toast} from '@/util/util'
+import { api, isValidName, openLoginModal, openModal, toast } from '@/util/util'
 import Card from '@/components/Card.vue'
 import Modal from '@/components/Modal.vue'
 import ModalContent from '@/components/ModalContent.vue'
@@ -163,10 +163,17 @@ export default {
   },
   data() {
     return {
-      disableForm: false,
+      disableForm: true,
+      me: {},
     }
   },
   methods: {
+    onUserUpdated(user) {
+      if (!user) return openLoginModal()
+      this.me = user
+      this.$refs.me_username.value = user.username
+      this.disableForm = false
+    },
     changeName() {
       if (this.disableForm) return
       const username = this.$refs.me_username.value
@@ -386,22 +393,7 @@ export default {
     },
   },
   setup() {
-    const me = ref(null)
-    fetch(api('/i_users/me'), {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
-      },
-    }).then(res => res.json()).then(res => {
-      if (res['error']) {
-        return
-      }
-      me.value = res
-      console.log(res)
-    })
     return {
-      me,
       recoveryCodes: '',
       codes: refCodes,
     }

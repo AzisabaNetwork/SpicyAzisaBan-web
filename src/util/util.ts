@@ -153,3 +153,13 @@ export const autoInitM = () => {
 }
 
 export const getElementById = (id: string) => document.getElementById(id)
+
+export const search = (query: string, types?: string[] | null) => {
+  if (!types) types = new URLSearchParams(location.search).get('types')?.split(',')
+  if (!types) types = ['players', 'punishments']
+  const params = new URLSearchParams({
+    types: types.join(','),
+    q: query,
+  })
+  location.href = `/search?${params.toString()}`
+}

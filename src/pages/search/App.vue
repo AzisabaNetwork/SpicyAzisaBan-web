@@ -171,6 +171,10 @@ function readSearchType() {
   }
 }
 
+function queryToURL(query: string = '') {
+  return encodeURI((query || '').replace('\u0009', ''))
+}
+
 export default {
   components: {
     UserEntry,
@@ -200,7 +204,7 @@ export default {
       } else {
         searchType.value.push(type)
       }
-      history.replaceState({}, document.title, `${location.origin}/search?q=${encodeURI((document.getElementById('search') as HTMLInputElement).value || '')}&types=${this.searchType.join(',')}`)
+      history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL((document.getElementById('search') as HTMLInputElement).value || '')}&types=${this.searchType.join(',')}`)
       search()
     },
     getSearchWord() {
@@ -211,7 +215,7 @@ export default {
       location.href = url
     },
     handleSearchInputEvent(event) {
-      history.replaceState({}, document.title, `${location.origin}/search?q=${encodeURI(event.target.value || '')}&types=${this.searchType.join(',')}`)
+      history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL(event.target.value || '')}&types=${this.searchType.join(',')}`)
       searchDebounced()
     },
     onMeUpdated(me) {

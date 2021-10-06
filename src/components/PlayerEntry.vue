@@ -24,7 +24,7 @@
         </span>
       </div>
     </td>
-    <td>{{ (new Date(lastSeen)).toLocaleString('ja-JP') }}</td>
+    <td>{{ getLastLogin() }}</td>
   </tr>
 </template>
 
@@ -37,12 +37,19 @@ export default {
   props: {
     name: String,
     uuid: String,
-    lastSeen: Number,
+    lastLogin: Number,
     ip: String,
     style: Object,
   },
   methods: {
     search,
+    getLastLogin(): string {
+      if (this.lastLogin <= 0) {
+        return ''
+      } else {
+        return (new Date(this.lastLogin)).toLocaleString('ja-JP')
+      }
+    },
   },
 }
 </script>

@@ -6,7 +6,7 @@
     <div class="nav-wrapper">
       <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
       <div style="display: flex">
-        <div style="margin: auto; max-width: 20%" v-if="loggedIn" class="hide-on-med-and-down"></div>
+        <div style="margin: auto; max-width: 20%" class="hide-on-med-and-down"></div>
         <div style="justify-content: center; width: 50%;" v-if="loggedIn">
           <form action="/search" method="get">
             <InputTextField

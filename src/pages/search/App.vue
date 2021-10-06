@@ -55,7 +55,7 @@
             :key="p.uuid"
             :name="p.name"
             :uuid="p.uuid"
-            :last-seen="p.last_seen"
+            :last-login="p.last_login"
             :ip="p.ip"
             :style="{ 'background-color': p.exactMatch ? 'rgba(0, 255, 0, 0.2)' : null }"
         />

@@ -7,7 +7,18 @@
       <div class="col s11" style="margin-left: 0">
         <FlippedTable>
           <FlippedTableEntry :ks="2" :vs="10" k="#ID" :v="'#' + punishment.id" />
-          <FlippedTableEntry :ks="2" :vs="10" k="名前/IP" :v="punishment.name" />
+          <FlippedTableEntry :ks="2" :vs="10" k="名前/IP">
+            <span
+                :style="{ 'padding-left': punishment.target.includes('-') ? '68px' : '34px' }">
+              {{ punishment.name }}
+            </span>
+            <a :href="`/players?uuid=${punishment.target}`" v-show="punishment.target.includes('-')">
+              <MdIcon icon="article" classes="clickable-icon" style="margin-left: 3px; padding: 5px;" />
+            </a>
+            <a :href="buildSearchURL(punishment.name)">
+              <MdIcon icon="search" classes="clickable-icon" style="margin-left: 3px; padding: 5px;" />
+            </a>
+          </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="タイプ"><PunishmentType :type="punishment.type" /></FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="理由">
             <InputTextField v-if="editing" id="p-reason" ref="reason" white-text label="理由" :default-value="punishment.reason" active-label />
@@ -191,7 +202,7 @@ import Dummy from '@/components/Dummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import MdImage from '@/components/MdImage.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import { api, openModal, processTime, toast, unProcessTime3, zero } from '@/util/util'
+import { api, buildSearchURL, openModal, processTime, toast, unProcessTime3, zero } from '@/util/util'
 import Modal from '@/components/Modal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
@@ -224,11 +235,11 @@ export default {
   },
   data() {
     return {
-      navbar: {},
       isInvalidDuration: false,
     }
   },
   methods: {
+    buildSearchURL,
     processTime,
     unProcessTime3,
     isTemp() {

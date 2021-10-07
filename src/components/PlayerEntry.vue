@@ -1,36 +1,36 @@
 <template>
-  <tr :style="style">
+  <tr :style="style" style="cursor: pointer;" @click="redirectTo(`/players?uuid=${uuid}`)">
     <td>
       <div style="display: flex; align-items: center;">
         <span>{{ name }}</span>
-        <span @click="search(name)">
+        <a :href="buildSearchURL(name)">
           <MdIcon icon="search" classes="clickable-icon" style="margin-left: 3px; padding: 5px;" />
-        </span>
+        </a>
       </div>
     </td>
     <td>
       <div style="display: flex; align-items: center;">
         <span>{{ uuid }}</span>
-        <span @click="search(uuid)">
+        <a :href="buildSearchURL(uuid)">
           <MdIcon icon="search" classes="clickable-icon" style="margin-left: 3px; padding: 5px;" />
-        </span>
+        </a>
       </div>
     </td>
     <td>
       <div style="display: flex; align-items: center;">
         <span>{{ ip }}</span>
-        <span @click="search(ip)">
+        <a :href="buildSearchURL(ip)">
           <MdIcon icon="search" classes="clickable-icon" style="margin-left: 3px; padding: 5px;" />
-        </span>
+        </a>
       </div>
     </td>
-    <td>{{ getLastLogin() }}</td>
+    <td>{{ toDateStringMaybe(lastLogin) }}</td>
   </tr>
 </template>
 
 <script lang="ts">
 import MdIcon from '@/components/MdIcon.vue'
-import { search } from '@/util/util'
+import { buildSearchURL, search, toDateStringMaybe } from '@/util/util'
 
 export default {
   components: { MdIcon },
@@ -42,13 +42,11 @@ export default {
     style: Object,
   },
   methods: {
+    buildSearchURL,
     search,
-    getLastLogin(): string {
-      if (this.lastLogin <= 0) {
-        return ''
-      } else {
-        return (new Date(this.lastLogin)).toLocaleString('ja-JP')
-      }
+    toDateStringMaybe,
+    redirectTo(url: string) {
+      location.href = url
     },
   },
 }

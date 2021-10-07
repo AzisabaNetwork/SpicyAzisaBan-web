@@ -28,5 +28,9 @@ module.exports = {
             entry: 'src/pages/admin/users/main.ts',
             title: 'users | SpicyAzisaBan',
         },
+        players: {
+            entry: 'src/pages/players/main.ts',
+            title: 'players | SpicyAzisaBan',
+        },
     }
 }

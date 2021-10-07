@@ -3,6 +3,7 @@
     <div class="col" :class="`s${ks || 5}`">
       <span class="flow-text" :class="kc" style="text-align: center">
         {{ k }}
+        <slot name="key" />
       </span>
     </div>
     <div class="col" :class="`s${vs || 7}`" :style="vstyle">

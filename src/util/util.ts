@@ -155,11 +155,23 @@ export const autoInitM = () => {
 export const getElementById = (id: string) => document.getElementById(id)
 
 export const search = (query: string, types?: string[] | null) => {
+  location.href = buildSearchURL(query, types)
+}
+
+export const buildSearchURL = (query: string, types?: string[] | null) => {
   if (!types) types = new URLSearchParams(location.search).get('types')?.split(',')
   if (!types) types = ['players', 'punishments']
   const params = new URLSearchParams({
     types: types.join(','),
     q: query,
   })
-  location.href = `/search?${params.toString()}`
+  return `/search?${params.toString()}`
+}
+
+export const toDateStringMaybe = (ts: number): string => {
+  if (ts <= 0) {
+    return ''
+  } else {
+    return (new Date(ts)).toLocaleString('ja-JP')
+  }
 }

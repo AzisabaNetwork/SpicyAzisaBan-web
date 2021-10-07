@@ -67,7 +67,7 @@
         text="サブアカウントの情報を取得"
         @click="fetchMore()"
     />
-    <h2>サブアカウント</h2>
+    <h2>サブアカウント ({{ morePlayers.length }})</h2>
     <PlayerEntriesList>
       <PlayerEntry
           v-for="p in morePlayers"

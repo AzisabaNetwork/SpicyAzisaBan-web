@@ -62,6 +62,28 @@
       />
     </FlippedTable>
     <Button
+        v-if="!fetchedIssuedPunishments"
+        :disabled="fetchingIssuedPunishments"
+        text="送信した処罰を取得"
+        @click="fetchIssuedPunishments()"
+    />
+    <h2>送信した処罰 ({{ issuedPunishments.length }})</h2>
+    <PunishmentEntriesList>
+      <PunishmentEntry
+          v-for="p in issuedPunishments"
+          :key="p.id"
+          :id="p.id"
+          :type="p.type"
+          :target="p.name"
+          :reason="p.reason"
+          :duration="p.end - p.start"
+          :server="p.server"
+          :unpunished="p.unpunished || !p.active || (p.end > 0 && p.end < Date.now())"
+          :style="{ cursor: 'pointer' }"
+          @click="redirectTo(`/punishments/view?id=${p.id}`)"
+      />
+    </PunishmentEntriesList>
+    <Button
         v-if="!fetchedMore"
         :disabled="fetchingMore"
         text="サブアカウントの情報を取得"
@@ -111,9 +133,12 @@ export default {
     return {
       player: null,
       punishments: [],
+      issuedPunishments: [],
       morePlayers: [],
       fetchedMore: false,
       fetchingMore: false,
+      fetchedIssuedPunishments: false,
+      fetchingIssuedPunishments: false,
     }
   },
   methods: {
@@ -121,6 +146,23 @@ export default {
     toDateStringMaybe,
     redirectTo(url: string) {
       location.href = url
+    },
+    fetchIssuedPunishments() {
+      if (this.fetchedIssuedPunishments || this.fetchingIssuedPunishments) return
+      this.fetchingIssuedPunishments = true
+      fetch(api(`/punishments/punishments_by/${this.player.uuid}`), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
+        },
+      }).then(res => res.json()).then(res => {
+        const err = res['error']
+        if (err) return toast('データの取得に失敗しました: ' + err)
+        this.fetchedIssuedPunishments = true
+        this.issuedPunishments.push(...res.data.reverse())
+      }).finally(() => this.fetchingIssuedPunishments = false)
     },
     fetchMore() {
       if (this.fetchedMore || this.fetchingMore) return

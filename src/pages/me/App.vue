@@ -81,8 +81,8 @@
           </div>
         </Card>
         <Card>
-          <h2>アカウント連携</h2>
-          <p>アカウント連携: {{ me.linked_uuid ? 'オン' : 'オフ' }}</p>
+          <h2>Minecraftアカウント連携</h2>
+          <p>Minecraftアカウント連携: {{ me.linked_uuid ? 'オン' : 'オフ' }}</p>
           <Dummy v-if="me.linked_uuid">
             <p>連携されているUUID: {{ me.linked_uuid }}</p>
             <p>連携されている名前: {{ me.linked_name }}</p>
@@ -95,6 +95,29 @@
                 :text="me.linked_uuid ? '連携解除' : '連携'"
                 :disable="disableForm"
             />
+          </div>
+        </Card>
+        <Card>
+          <h2>アカウント連携</h2>
+          <div class="col s12">
+            <Button
+                type='submit'
+                color="green submit-button"
+                @click="enableDiscord()"
+                text="Discordアカウントと連携"
+                :disable="disableForm"
+                v-if="!me.discord_user_tag"
+            />
+            <Dummy v-else>
+              <p>Discordアカウント: {{ me.discord_user_tag }} (ID: {{ me.discord_user_id }})</p>
+              <Button
+                  type='submit'
+                  color="blue submit-button"
+                  @click="disableDiscord()"
+                  text="Discordアカウントの連携を解除"
+                  :disable="disableForm"
+              />
+            </Dummy>
           </div>
         </Card>
       </div>
@@ -391,11 +414,46 @@ export default {
         }
       })
     },
+    enableDiscord() {
+      this.disableForm = true
+      fetch(api(`/api/oauth2/discord/get_url?for=link&apiRoot=${encodeURIComponent(api(''))}`), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+        },
+      }).then(res => res.json()).then(res => {
+        if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
+        location.href = res['url']
+      }).finally(() => this.disableForm = false)
+    },
+    disableDiscord() {
+      this.disableForm = true
+      fetch(api('/i_users/unlink_discord'), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+        },
+      }).then(res => res.json()).then(res => {
+        if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
+        this.refreshUserStatus()
+      }).finally(() => this.disableForm = false)
+    }
   },
   setup() {
     return {
       recoveryCodes: '',
       codes: refCodes,
+    }
+  },
+  mounted() {
+    const params = new URLSearchParams(location.search)
+    if (params.has('state')) {
+      localStorage.setItem('spicyazisaban_session', params.get('state'))
+      location.href = location.origin + '/me'
     }
   },
 }

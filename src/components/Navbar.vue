@@ -16,6 +16,7 @@
       <InputTextField :min-length=6 :max-length=10 type="text" label="(ログイン時+有効化してる人のみ)2FAのコードもしくは復旧コード" id="navbar_2fa" ref="mfa_token"/>
     </ModalContent>
     <ModalFooter>
+      <Button color="blue accent-2" @click="loginWithDiscord" text="Discordでログイン" :disabled="disableForm" />
       <Button color="orange darken-4" @click="doRegister" text="アカウントを作成" :disabled="disableForm" />
       <Button color="green" @click="doLogin" text="ログイン" :disabled="disableForm" />
     </ModalFooter>
@@ -174,6 +175,19 @@ export default {
           res.text().then(text => toast(text))
         }
       })
+    },
+    loginWithDiscord() {
+      this.disableForm = true
+      fetch(api(`/api/oauth2/discord/get_url?for=login&apiRoot=${encodeURIComponent(api(''))}`), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }).then(res => res.json()).then(res => {
+        if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
+        location.href = res.url
+      }).finally(() => this.disableForm = false)
     },
   },
   components: {

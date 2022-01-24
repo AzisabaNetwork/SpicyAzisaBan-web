@@ -100,6 +100,8 @@ export default {
         toast('エラー: ログインしてません。')
       } else if (e === 'missing_permissions') {
         toast('エラー: 権限がありません。')
+      } else if (e === 'discord_not_linked') {
+        toast('エラー: Discordアカウントは連携されていません。')
       } else {
         toast('エラー: ' + e)
       }

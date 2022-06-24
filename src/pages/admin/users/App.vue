@@ -101,6 +101,7 @@ export default {
     },
     updateUser() {
       this.disableForm = true
+      const groupElement = (document.querySelector('input[type=radio]:checked') as HTMLInputElement)
       fetch(api(`/i_users/update`), {
         method: 'POST',
         headers: {
@@ -113,7 +114,7 @@ export default {
           username: this.$refs.admin_username.value,
           email: this.$refs.admin_email.value,
           password: this.$refs.admin_new_password.value,
-          group: (document.querySelector('input[type=radio]:checked') as HTMLInputElement)?.value,
+          group: groupElement ? groupElement.value : null,
         }),
       }).then(res => res.json()).then(res => {
         const err = res['error']

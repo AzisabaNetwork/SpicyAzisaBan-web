@@ -159,7 +159,8 @@ export const search = (query: string, types?: string[] | null) => {
 }
 
 export const buildSearchURL = (query: string, types?: string[] | null) => {
-  if (!types) types = new URLSearchParams(location.search).get('types')?.split(',')
+  const param = new URLSearchParams(location.search).get('types')
+  if (!types && param) types = param.split(',')
   if (!types) types = ['players', 'punishments']
   const params = new URLSearchParams({
     types: types.join(','),

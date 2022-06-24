@@ -135,11 +135,24 @@
     <h4>証拠一覧</h4>
     <div class="row">
       <FlippedTable style="width: 100%">
-        <FlippedTableEntry v-for="proof in punishment.proofs" :key="proof.id" :ks="1" :vs="11" :k="'#' + proof.id" vc="left full-width text-align-left">
+        <FlippedTableEntry v-for="proof in punishment.proofs" :key="proof.id" :ks="1" :vs="11" :k="(proof.public ? 'P' : '') + '#' + proof.id" vc="left full-width text-align-left">
           <Dummy v-if="editing">
             <div class="row" style="align-items: center; margin: 0;">
-              <div class="col s11">
-                <InputTextField :id="'p-p-' + proof.id" :ref="'proof-' + proof.id" white-text :label="'証拠 #' + proof.id" :default-value="proof.text" active-label />
+              <div class="col s10">
+                <InputTextField
+                  :id="'p-p-' + proof.id"
+                  :ref="'proof-' + proof.id"
+                  white-text
+                  :label="'証拠 #' + proof.id"
+                  :default-value="proof.text"
+                  active-label
+                />
+              </div>
+              <div class="col s1">
+                <label>
+                  <input class="filled-in white-text" type="checkbox" v-model="proof.public" :value="proof.public" />
+                  <span>公開</span>
+                </label>
               </div>
               <div class="col s1">
                 <Link color="clickable-icon" @click="punishment.proofs = punishment.proofs.filter(p => p.id !== proof.id)">
@@ -323,9 +336,9 @@ export default {
           id: punishment.value.id,
           reason: this.$refs.reason.value,
           end,
-          server: this.$refs.server?.value || punishment.value.server,
-          unpunish_reason: this.$refs.unpunishReason?.value || null,
-          proofs: punishment.value.proofs.map(p => ({ id: p.id, value: this.$refs[`proof-${p.id}`].value })),
+          server: (this.$refs.server || { value: null }).value || punishment.value.server,
+          unpunish_reason: (this.$refs.unpunishReason || { value: null }).value || null, // just in case "value" evaluates to undefined
+          proofs: punishment.value.proofs.map(p => ({ id: p.id, value: this.$refs[`proof-${p.id}`].value, public: p.public || false })),
         }),
       }).then(res => res.json()).then(async res => {
         const err = res['error']
@@ -433,7 +446,7 @@ export default {
         editing.value = params.has('edit')
         spinnerActive.value = false
         const elems = document.querySelectorAll('.materialboxed')
-        // @ts-ignore
+        // @ts-expect-error
         M.Materialbox.init(elems) // eslint-disable-line no-undef
       })
     } else {

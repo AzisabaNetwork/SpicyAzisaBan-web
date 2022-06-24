@@ -115,7 +115,7 @@ export default {
     doLogin() {
       if (!this.$refs.email.value.includes(".") || !this.$refs.email.value.includes("@") || this.$refs.email.value.length < 5) return
       if (this.$refs.password.value.length < 7) return
-      const mfa = this.$refs.mfa_token?.value || ''
+      const mfa = (this.$refs.mfa_token || { value: null }).value || ''
       if (mfa.length > 0 && (mfa.length < 6 || mfa.length > 10)) return
       this.disableForm = true
       toast('ログイン中...')

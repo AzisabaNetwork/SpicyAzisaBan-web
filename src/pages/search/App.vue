@@ -162,8 +162,9 @@ function search() {
 
 function readSearchType() {
   const params = new URLSearchParams(window.location.search)
-  const types = params.get('types')?.split(',')
-  if (!types) return
+  const param = params.get('types')
+  if (!param) return
+  const types = param.split(',')
   if (types.length === 1 && types[0] === '') {
     searchType.value = []
   } else {

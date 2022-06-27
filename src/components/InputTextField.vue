@@ -52,6 +52,7 @@ export default {
     disabled: Boolean,
     labelRef: String,
     name: String,
+    'v_model': String,
   },
   emits: ['input'],
   methods: {

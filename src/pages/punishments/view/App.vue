@@ -91,7 +91,15 @@
           <FlippedTableEntry :ks="2" :vs="10" k="解除済み"><ColoredBoolean :bool="punishment.unpunished" /></FlippedTableEntry>
           <Dummy v-if="punishment.unpunished">
             <FlippedTableEntry :ks="2" :vs="10" k="解除理由">
-              <InputTextField v-if="editing" id="p-u-reason" ref="unpunishReason" white-text label="解除理由" :default-value="punishment.unpunish.reason" active-label />
+              <InputTextField
+                v-if="editing"
+                id="p-u-reason"
+                ref="unpunishReason"
+                white-text
+                label="解除理由"
+                :default-value="punishment.unpunish.reason"
+                active-label
+              />
               <Dummy v-else>{{ punishment.unpunish.reason }}</Dummy>
             </FlippedTableEntry>
             <FlippedTableEntry :ks="2" :vs="10" k="解除日時" :v="new Date(punishment.unpunish.timestamp).toLocaleString('ja-JP')" />
@@ -139,14 +147,18 @@
           <Dummy v-if="editing">
             <div class="row" style="align-items: center; margin: 0;">
               <div class="col s10">
-                <InputTextField
-                  :id="'p-p-' + proof.id"
-                  :ref="'proof-' + proof.id"
-                  white-text
-                  :label="'証拠 #' + proof.id"
-                  :default-value="proof.text"
-                  active-label
-                />
+                <div class="input-field col12">
+                  <input
+                    :id="'p-p-' + proof.id"
+                    type="text"
+                    class="validate white-text"
+                    v-model="proof.value"
+                  />
+                  <label
+                    :for="'p-p-' + proof.id"
+                    class="active"
+                  >{{ '証拠 #' + proof.id }}</label>
+                </div>
               </div>
               <div class="col s1">
                 <label>
@@ -185,7 +197,7 @@
     <ModalContent title="処罰の解除">
       <InputTextField
           id="unpunish-reason"
-          ref="unpunishReason"
+          ref="modalUnpunishReason"
           type="text"
           :min-length="1"
           :max-length="255"
@@ -201,7 +213,7 @@
 </template>
 
 <script lang="ts">
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import Preloader from '@/components/Preloader.vue'
 import Container from '@/components/Container.vue'
@@ -225,6 +237,7 @@ const editing = ref(false)
 const isUpdatingData = ref(false)
 const punishment = ref(null)
 const isPerm = ref(false)
+const unpunishReason: Ref<string> = ref(null)
 
 export default {
   components: {
@@ -338,7 +351,7 @@ export default {
           end,
           server: (this.$refs.server || { value: null }).value || punishment.value.server,
           unpunish_reason: (this.$refs.unpunishReason || { value: null }).value || null, // just in case "value" evaluates to undefined
-          proofs: punishment.value.proofs.map(p => ({ id: p.id, value: this.$refs[`proof-${p.id}`].value, public: p.public || false })),
+          proofs: punishment.value.proofs,
         }),
       }).then(res => res.json()).then(async res => {
         const err = res['error']
@@ -378,7 +391,7 @@ export default {
     },
     onUnpunishButtonClick() {
       if (this.isUpdatingData) return
-      const reason = this.$refs.unpunishReason.value || ''
+      const reason = this.$refs.modalUnpunishReason.value || ''
       if (!reason || reason.length === 0) return toast('理由が空です。')
       if (reason.length > 255) return toast('理由が長すぎます。')
       this.isUpdatingData = true
@@ -458,6 +471,7 @@ export default {
       editing,
       isUpdatingData,
       isPerm,
+      unpunishReason,
     }
   }
 }

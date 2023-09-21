@@ -155,6 +155,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res['error']
         if (err) return toast('データの取得に失敗しました: ' + err)
@@ -172,6 +173,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res['error']
         if (err) return toast('プレイヤーの取得に失敗しました: ' + err)
@@ -192,6 +194,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res['error']
         if (err) {

@@ -41,6 +41,7 @@ export default {
           user_id: this.userId,
           username,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(data => {
         const err = data['error']
         if (err) {
@@ -67,7 +68,9 @@ export default {
     const showForm = ref(false)
     const userId = ref(0)
     if (state) {
-      fetch(api(`/i_users/register/${state}`)).then(res => res.json()).then(data => {
+      fetch(api(`/i_users/register/${state}`), {
+        credentials: 'include',
+      }).then(res => res.json()).then(data => {
         const err = data['error']
         if (err) {
           spinnerActive.value = false

@@ -54,6 +54,7 @@ function search() {
       query,
       type: searchType.value.join(','),
     }),
+    credentials: 'include',
   }).then(res => res.json()).then(res => {
     const err = res['error']
     if (err) {

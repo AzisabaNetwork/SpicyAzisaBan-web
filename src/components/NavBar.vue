@@ -55,6 +55,7 @@ function refreshLoginStatus() {
       'Accept': 'application/json',
       'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
     },
+    credentials: 'include',
   }).then(async res => {
     const data = await res.json()
     const isSuccess = res.status === 200 && !data['error']
@@ -96,6 +97,7 @@ export default {
           email: this.$refs.email.value,
           password: this.$refs.password.value,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res['error']
         if (err) {
@@ -129,6 +131,7 @@ export default {
           password: this.$refs.password.value,
           mfa_token: mfa,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         // @ts-expect-error
         M.Modal.getInstance(document.getElementById('login-modal')).close() // eslint-disable-line no-undef
@@ -165,6 +168,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': session,
         },
+        credentials: 'include',
       }).then(res => {
         if (res.status === 200) {
           localStorage.removeItem("spicyazisaban_session")
@@ -183,6 +187,7 @@ export default {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
         location.href = res.url

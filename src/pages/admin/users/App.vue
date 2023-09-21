@@ -114,6 +114,7 @@ export default {
           password: this.$refs.admin_new_password.value,
           group: groupElement ? groupElement.value : null,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res['error']
         if (err) {
@@ -139,6 +140,7 @@ export default {
         'Accept': 'application/json',
         'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
       },
+      credentials: 'include',
     }).then(res => res.json()).then(res => {
       const err = res['error']
       if (err) {

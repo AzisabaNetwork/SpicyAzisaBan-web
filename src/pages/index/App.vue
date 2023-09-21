@@ -52,6 +52,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         if (res['error']) {
           return
@@ -73,6 +74,7 @@ export default {
         'Content-Type': 'application/json',
         'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
       },
+      credentials: 'include',
     }).then(res => res.json()).then(res => {
       if (res['error']) {
         return

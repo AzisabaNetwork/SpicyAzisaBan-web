@@ -214,6 +214,7 @@ export default {
           user_id: this.$refs.navbar.user.id,
           username,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res.error
         if (err) {
@@ -260,6 +261,7 @@ export default {
           currentPassword,
           newPassword,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res.error
         if (err) {
@@ -282,6 +284,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         if (res['error']) {
           return
@@ -306,6 +309,7 @@ export default {
               'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
             },
             body: JSON.stringify({ token }),
+            credentials: 'include',
           }).then(res => res.json()).then(res => {
             const err = res.error
             if (err) {
@@ -332,6 +336,7 @@ export default {
               'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
             },
             body: JSON.stringify({ password }),
+            credentials: 'include',
           }).then(res => res.json()).then(res => {
             const err = res.error
             if (err) {
@@ -377,6 +382,7 @@ export default {
               'Content-Type': 'application/json',
               'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
             },
+            credentials: 'include',
           }).then(res => res.json()).then(res => {
             if (res['error']) {
               toast('不明なエラーが発生しました: ' + res['error'])
@@ -394,6 +400,7 @@ export default {
               'Content-Type': 'application/json',
               'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
             },
+            credentials: 'include',
           }).then(res => res.json()).then(res => {
             console.log(res)
             if (res['error']) {
@@ -421,6 +428,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
         location.href = res['url']
@@ -435,6 +443,7 @@ export default {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
         this.refreshUserStatus()

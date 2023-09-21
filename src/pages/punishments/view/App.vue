@@ -351,6 +351,7 @@ export default {
           unpunish_reason: (this.$refs.unpunishReason || { value: null }).value || null, // just in case "value" evaluates to undefined
           proofs: punishment.value.proofs,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(async res => {
         const err = res['error']
         if (err) {
@@ -368,6 +369,7 @@ export default {
             'Accept': 'application/json',
             'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
           },
+          credentials: 'include',
         }).then(res => res.json()).then(data => {
           const err = data['error']
           if (err) {
@@ -404,6 +406,7 @@ export default {
           id: punishment.value.id,
           reason,
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res['error']
         if (err) {
@@ -445,6 +448,7 @@ export default {
           'Accept': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
         },
+        credentials: 'include',
       }).then(res => res.json()).then(data => {
         const err = data['error']
         if (err) {

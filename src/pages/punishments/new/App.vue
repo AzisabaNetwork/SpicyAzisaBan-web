@@ -166,6 +166,7 @@ export default {
           end,
           server: this.$refs.server.value || 'global',
         }),
+        credentials: 'include',
       }).then(res => res.json()).then(async res => {
         if (res['error']) {
           const err = res['error']

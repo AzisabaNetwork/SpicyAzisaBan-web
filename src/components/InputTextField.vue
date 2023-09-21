@@ -7,7 +7,7 @@
         class="validate"
         :minlength=minLength
         :maxlength=maxLength
-        :ref="ref || 'input'"
+        :ref="refForRef || 'input'"
         v-model="value"
         :pattern="pattern"
         :class="[whiteText ? 'white-text' : '', inputClass]"
@@ -39,7 +39,7 @@ export default {
     label: String,
     maxLength: Number,
     minLength: Number,
-    ref: String,
+    refForRef: String,
     pattern: String,
     whiteText: Boolean,
     inputStyle: Object,

@@ -21,7 +21,7 @@
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="タイプ"><PunishmentType :type="punishment.type" /></FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="理由">
-            <InputTextField v-if="editing" id="p-reason" ref="reason" white-text label="理由" :default-value="punishment.reason" active-label />
+            <InputTextField v-if="editing" id="p-reason" refForRef="reason" white-text label="理由" :default-value="punishment.reason" active-label />
             <Dummy v-else>{{ punishment.reason }}</Dummy>
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="処罰日時" :v="new Date(punishment.start).toLocaleString('ja-JP')" />
@@ -39,7 +39,7 @@
                   input-class="datepicker"
                   :default-value="dateToDateString(new Date(punishment.end))"
                   label="期限切れ日時 (YYYY/MM/DD)"
-                  ref="end-date-picker"
+                  refForRef="end-date-picker"
                   active-label
                   white-text
                   @change="onEndDateTimeChange"
@@ -50,7 +50,7 @@
                   input-class="timepicker"
                   :default-value="dateToTimeString(new Date(punishment.end))"
                   label="期限切れ日時 (hh:mm:ss)"
-                  ref="end-time-picker"
+                  refForRef="end-time-picker"
                   active-label
                   white-text
                   @change="onEndDateTimeChange"
@@ -65,7 +65,7 @@
                   id="duration"
                   :default-value="unProcessTime3(punishment.end - punishment.start)"
                   label="期間"
-                  ref="duration"
+                  refForRef="duration"
                   active-label
                   white-text
                   :input-class="isInvalidDuration ? 'the-invalid' : null"
@@ -73,13 +73,13 @@
               />
               <Dummy v-else>無期限</Dummy>
             </Dummy>
-            <Time v-else :time="punishment.end - punishment.start" />
+            <NumberToTime v-else :time="punishment.end - punishment.start" />
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="サーバー">
             <InputTextField
                 v-if="(this.$refs.navbar.user.group === 'manager' || this.$refs.navbar.user.group === 'admin') && editing"
                 id="p-server"
-                ref="server"
+                refForRef="server"
                 white-text
                 label="サーバー"
                 :default-value="punishment.server"
@@ -94,7 +94,7 @@
               <InputTextField
                 v-if="editing"
                 id="p-u-reason"
-                ref="unpunishReason"
+                refForRef="unpunishReason"
                 white-text
                 label="解除理由"
                 :default-value="punishment.unpunish.reason"
@@ -117,23 +117,23 @@
           <tbody>
             <tr>
               <td>
-                <Link style="display: block; cursor: pointer;" :class="'editing-' + editing.toString()" @click="onEditButtonClick" title="編集">
+                <SLink style="display: block; cursor: pointer;" :class="'editing-' + editing.toString()" @click="onEditButtonClick" title="編集">
                   <MdIcon icon="edit" />
-                </Link>
+                </SLink>
               </td>
             </tr>
             <tr v-if="!editing && punishment.active">
               <td>
-                <Link style="display: block; cursor: pointer;" @click="openUnpunishModal" title="処罰を解除">
+                <SLink style="display: block; cursor: pointer;" @click="openUnpunishModal" title="処罰を解除">
                   <MdIcon icon="block" />
-                </Link>
+                </SLink>
               </td>
             </tr>
             <tr v-if="editing">
               <td>
-                <Link style="display: block;" :class="'update-button-' + isUpdatingData.toString()" @click="updateData" title="保存">
+                <SLink style="display: block;" :class="'update-button-' + isUpdatingData.toString()" @click="updateData" title="保存">
                   <MdIcon icon="save" />
-                </Link>
+                </SLink>
               </td>
             </tr>
           </tbody>
@@ -167,15 +167,15 @@
                 </label>
               </div>
               <div class="col s1">
-                <Link color="clickable-icon" @click="punishment.proofs = punishment.proofs.filter(p => p.id !== proof.id)">
+                <SLink color="clickable-icon" @click="punishment.proofs = punishment.proofs.filter(p => p.id !== proof.id)">
                   <MdIcon icon="delete" />
-                </Link>
+                </SLink>
               </div>
             </div>
           </Dummy>
           <Dummy v-else>
             <MdImage v-if="/\.(png|gif|jpg|jpeg)$/.test(proof.text)" :src="proof.text" style="max-width: 90%; max-height: 90%;" />
-            <Link v-else-if="proof.text.startsWith('http://') || proof.text.startsWith('https://')" :href="proof.text">{{ proof.text }}</Link>
+            <SLink v-else-if="proof.text.startsWith('http://') || proof.text.startsWith('https://')" :href="proof.text">{{ proof.text }}</SLink>
             <Dummy v-else>{{ proof.text }}</Dummy>
           </Dummy>
         </FlippedTableEntry>
@@ -197,7 +197,7 @@
     <ModalContent title="処罰の解除">
       <InputTextField
           id="unpunish-reason"
-          ref="modalUnpunishReason"
+          refForRef="modalUnpunishReason"
           type="text"
           :min-length="1"
           :max-length="255"
@@ -206,32 +206,31 @@
       />
     </ModalContent>
     <ModalFooter>
-      <Button color="modal-close green" text="閉じる" :disabled="isUpdatingData" />
-      <Button color="red accent-4" text="解除" @click="onUnpunishButtonClick" :disabled="isUpdatingData" />
+      <v-btn color="modal-close green" text="閉じる" :disabled="isUpdatingData" />
+      <v-btn color="red accent-4" text="解除" @click="onUnpunishButtonClick" :disabled="isUpdatingData" />
     </ModalFooter>
   </Modal>
 </template>
 
 <script lang="ts">
 import { Ref, ref } from 'vue'
-import Navbar from '@/components/Navbar.vue'
-import Preloader from '@/components/Preloader.vue'
-import Container from '@/components/Container.vue'
+import Navbar from '@/components/NavBar.vue'
+import Preloader from '@/components/SpicyPreloader.vue'
+import Container from '@/components/SpicyContainer.vue'
 import FlippedTable from '@/components/FlippedTable.vue'
 import FlippedTableEntry from '@/components/FlippedTableEntry.vue'
-import Link from '@/components/Link.vue'
+import SLink from '@/components/SLink.vue'
 import PunishmentType from '@/components/PunishmentType.vue'
-import Time from '@/components/Time.vue'
+import NumberToTime from '@/components/NumberToTime.vue'
 import ColoredBoolean from '@/components/ColoredBoolean.vue'
-import Dummy from '@/components/Dummy.vue'
+import Dummy from '@/components/SDummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import MdImage from '@/components/MdImage.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { api, buildSearchURL, openModal, processTime, toast, unProcessTime3, zero } from '@/util/util'
-import Modal from '@/components/Modal.vue'
+import Modal from '@/components/SModal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
-import Button from '@/components/Button.vue'
 
 const editing = ref(false)
 const isUpdatingData = ref(false)
@@ -241,7 +240,6 @@ const unpunishReason: Ref<string> = ref(null)
 
 export default {
   components: {
-    Button,
     ModalFooter,
     ModalContent,
     Modal,
@@ -249,9 +247,9 @@ export default {
     MdIcon,
     Dummy,
     ColoredBoolean,
-    Time,
+    NumberToTime,
     PunishmentType,
-    Link,
+    SLink,
     FlippedTableEntry,
     FlippedTable,
     Container,

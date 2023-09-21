@@ -1,24 +1,24 @@
 <template>
   <NavWrapper :logged-in="loggedIn" :username="username" :default-search-word="defaultSearchWord" @search-input="fireSearchInputEvent">
     <template v-slot:common>
-      <li><Link href="/punishments/new" style="display: inline-flex; width: 100%;"><MdIcon icon="add" />処罰を追加</Link></li>
-      <li><Link href="/">処罰履歴</Link></li>
+      <li><SLink href="/punishments/new" style="display: inline-flex; width: 100%;"><MdIcon icon="add" />処罰を追加</SLink></li>
+      <li><SLink href="/">処罰履歴</SLink></li>
     </template>
     <template v-slot:menu>
-      <li><Link href="/me">設定</Link></li>
-      <li><Link @click="doLogout()">ログアウト</Link></li>
+      <li><SLink href="/me">設定</SLink></li>
+      <li><SLink @click="doLogout()">ログアウト</SLink></li>
     </template>
   </NavWrapper>
   <Modal id="login-modal" :dismissible="dismissibleLoginModal">
     <ModalContent title="ログイン / 登録">
-      <InputTextField :min-length=5 type="email" label="メールアドレス" id="navbar_email" ref="email"/>
-      <InputTextField :min-length=7 type="password" label="パスワード" id="navbar_password" ref="password"/>
-      <InputTextField :min-length=6 :max-length=10 type="text" label="(ログイン時+有効化してる人のみ)2FAのコードもしくは復旧コード" id="navbar_2fa" ref="mfa_token"/>
+      <InputTextField :min-length=5 type="email" label="メールアドレス" id="navbar_email" refForRef="email"/>
+      <InputTextField :min-length=7 type="password" label="パスワード" id="navbar_password" refForRef="password"/>
+      <InputTextField :min-length=6 :max-length=10 type="text" label="(ログイン時+有効化してる人のみ)2FAのコードもしくは復旧コード" id="navbar_2fa" refForRef="mfa_token"/>
     </ModalContent>
     <ModalFooter>
-      <Button color="blue accent-2" @click="loginWithDiscord" text="Discordでログイン" :disabled="disableForm" />
-      <Button color="orange darken-4" @click="doRegister" text="アカウントを作成" :disabled="disableForm" />
-      <Button color="green" @click="doLogin" text="ログイン" :disabled="disableForm" />
+      <v-btn color="blue accent-2" @click="loginWithDiscord" text="Discordでログイン" :disabled="disableForm" />
+      <v-btn color="orange darken-4" @click="doRegister" text="アカウントを作成" :disabled="disableForm" />
+      <v-btn color="green" @click="doLogin" text="ログイン" :disabled="disableForm" />
     </ModalFooter>
   </Modal>
 </template>
@@ -26,9 +26,8 @@
 <script lang="ts">
 import { ref } from "vue"
 import InputTextField from './InputTextField.vue'
-import Button from './Button.vue'
-import Link from './Link.vue'
-import Modal from "@/components/Modal.vue";
+import SLink from './SLink.vue'
+import Modal from "@/components/SModal.vue";
 import ModalContent from "@/components/ModalContent.vue";
 import ModalFooter from "@/components/ModalFooter.vue";
 import NavWrapper from "@/components/NavWrapper.vue";
@@ -197,8 +196,7 @@ export default {
     ModalContent,
     Modal,
     InputTextField,
-    Button,
-    Link,
+    SLink,
   },
   data() {
     return {

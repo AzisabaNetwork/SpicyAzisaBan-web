@@ -14,11 +14,11 @@
               id="me_username"
               white-text
               active-label
-              ref="me_username"
+              refForRef="me_username"
               pattern="^[a-zA-Z0-9_-]{4,32}$"
               :disabled="disableForm"
           />
-          <Button text="変更" :disabled="disableForm" @click="changeName()" />
+          <v-btn text="変更" :disabled="disableForm" @click="changeName()" />
         </Card>
         <Card>
           <h2>パスワード変更</h2>
@@ -27,7 +27,7 @@
               :min-length="7"
               id="me_current_password"
               white-text
-              ref="me_current_password"
+              refForRef="me_current_password"
               type="password"
               :disabled="disableForm"
           />
@@ -36,7 +36,7 @@
               :min-length="7"
               id="me_new_password"
               white-text
-              ref="me_new_password"
+              refForRef="me_new_password"
               type="password"
               :disabled="disableForm"
           />
@@ -45,7 +45,7 @@
               :min-length="7"
               id="me_new_password_confirm"
               white-text
-              ref="me_new_password_confirm"
+              refForRef="me_new_password_confirm"
               type="password"
               :disabled="disableForm"
           />
@@ -64,7 +64,7 @@
                 :min-length="7"
                 id="me_mfa_password"
                 white-text
-                ref="me_mfa_password"
+                refForRef="me_mfa_password"
                 type="password"
                 :disabled="disableForm"
                 v-if="!me.mfa_enabled"
@@ -140,7 +140,7 @@
       </div>
     </ModalContent>
     <ModalFooter>
-      <Button color="modal-close green" text="OK" />
+      <v-btn color="modal-close green" text="OK" />
     </ModalFooter>
   </Modal>
   <Modal id="me_link_account" :dismissible="false">
@@ -150,24 +150,23 @@
       <p>このコードは10分間有効です。10分が過ぎると再度連携ボタンをクリックする必要があります。</p>
     </ModalContent>
     <ModalFooter>
-      <Button color="modal-close green" text="OK" @click="refreshUserStatus()" />
+      <v-btn color="modal-close green" text="OK" @click="refreshUserStatus()" />
     </ModalFooter>
   </Modal>
 </template>
 
 <script lang="ts">
 import { ref } from 'vue'
-import Navbar from '@/components/Navbar.vue'
-import Container from '@/components/Container.vue'
-import Preloader from '@/components/Preloader.vue'
+import Navbar from '@/components/NavBar.vue'
+import Container from '@/components/SpicyContainer.vue'
+import Preloader from '@/components/SpicyPreloader.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import Button from '@/components/Button.vue'
 import { api, isValidName, openLoginModal, openModal, toast } from '@/util/util'
-import Card from '@/components/Card.vue'
-import Modal from '@/components/Modal.vue'
+import Card from '@/components/SpicyCard.vue'
+import Modal from '@/components/SModal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
-import Dummy from '@/components/Dummy.vue'
+import Dummy from '@/components/SDummy.vue'
 
 const refCodes = ref([])
 
@@ -178,7 +177,6 @@ export default {
     ModalContent,
     Modal,
     Card,
-    Button,
     Preloader,
     Container,
     Navbar,

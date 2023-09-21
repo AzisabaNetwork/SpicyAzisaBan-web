@@ -61,7 +61,7 @@
           :v="toDateStringMaybe(h.last_seen)"
       />
     </FlippedTable>
-    <Button
+    <v-btn
         v-if="!fetchedIssuedPunishments"
         :disabled="fetchingIssuedPunishments"
         text="送信した処罰を取得"
@@ -83,7 +83,7 @@
           @click="redirectTo(`/punishments/view?id=${p.id}`)"
       />
     </PunishmentEntriesList>
-    <Button
+    <v-btn
         v-if="!fetchedMore"
         :disabled="fetchingMore"
         text="サブアカウントの情報を取得"
@@ -104,8 +104,8 @@
 </template>
 
 <script lang="ts">
-import Navbar from '@/components/Navbar.vue'
-import Container from '@/components/Container.vue'
+import Navbar from '@/components/NavBar.vue'
+import Container from '@/components/SpicyContainer.vue'
 import FlippedTable from '@/components/FlippedTable.vue'
 import FlippedTableEntry from '@/components/FlippedTableEntry.vue'
 import { api, search, toast, toDateStringMaybe } from '@/util/util'
@@ -114,11 +114,9 @@ import PunishmentEntry from '@/components/PunishmentEntry.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import PlayerEntriesList from '@/components/PlayerEntriesList.vue'
 import PlayerEntry from '@/components/PlayerEntry.vue'
-import Button from '@/components/Button.vue'
 
 export default {
   components: {
-    Button,
     PlayerEntry,
     PlayerEntriesList,
     MdIcon,

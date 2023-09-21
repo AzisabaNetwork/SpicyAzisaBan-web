@@ -12,7 +12,7 @@
             <InputTextField
                 label="検索"
                 id="search"
-                ref="search"
+                refForRef="search"
                 name="q"
                 :white-text="true"
                 :input-style="{'border-bottom': '1px solid #26a69a'}"
@@ -56,7 +56,7 @@
 <script lang="ts">
 import DropdownTrigger from '@/components/DropdownTrigger.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import Dummy from '@/components/Dummy.vue'
+import Dummy from '@/components/SDummy.vue'
 
 const enterKeyListener = (e: KeyboardEvent) => {
   if (e.key !== 'Enter') return

@@ -16,17 +16,16 @@
           @click="redirectTo(p.id)"
       />
     </PunishmentEntriesList>
-    <Button text="さらに取得" @click="fetchMore" :disabled="disableFetchMoreButton || !hasNext" />
+    <v-btn text="さらに取得" @click="fetchMore" :disabled="disableFetchMoreButton || !hasNext" />
   </Container>
 </template>
 
 <script lang="ts">
 import { ref } from "vue"
-import Navbar from '@/components/Navbar.vue'
+import Navbar from '@/components/NavBar.vue'
 import PunishmentEntriesList from "@/components/PunishmentEntriesList.vue"
 import PunishmentEntry from "@/components/PunishmentEntry.vue"
-import Container from "@/components/Container.vue"
-import Button from "@/components/Button.vue"
+import Container from "@/components/SpicyContainer.vue"
 import { api, toast } from '@/util/util'
 
 const page = ref(0)
@@ -38,7 +37,6 @@ const highlight = ref([])
 
 export default {
   components: {
-    Button,
     Container,
     PunishmentEntry,
     PunishmentEntriesList,

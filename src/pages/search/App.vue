@@ -1,3 +1,88 @@
+<script setup lang="ts">
+import {ref} from "vue";
+import {api, toast} from "@/util/util";
+
+let previousSearchTimeout = 0
+
+function searchDebounced() {
+  if (previousSearchTimeout) clearTimeout(previousSearchTimeout)
+  previousSearchTimeout = setTimeout(() => search(), 250)
+}
+const result = ref({
+  users: [],
+  players: [],
+  punishments: [],
+})
+
+function processResult(query: string, res: { users: any[], players: any[], punishments: any[] }) {
+  const lq = query.toLowerCase()
+  res.users = [
+    ...res.users.filter(p => p.username.toLowerCase() === lq || p.email.toLowerCase() === lq).map(p => {
+      p.exactMatch = true
+      return p
+    }),
+    ...res.users.filter(p => p.username.toLowerCase() !== lq && p.email.toLowerCase() !== lq),
+  ]
+  res.players = [
+    ...res.players.filter(p => p.name.toLowerCase() === lq || p.uuid.toLowerCase() === lq).map(p => {
+      p.exactMatch = true
+      return p
+    }),
+    ...res.players.filter(p => p.name.toLowerCase() !== lq && p.uuid.toLowerCase() !== lq),
+  ]
+  console.log(res)
+  result.value = res
+}
+
+function search() {
+  const params = new URLSearchParams(window.location.search)
+  const query = params.get('q')
+  readSearchType()
+  if (!query) {
+    processResult('', { users: [], players: [], punishments: [] })
+    return
+  }
+  console.log(searchType.value)
+  fetch(api('/misc/search'), {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
+    },
+    body: JSON.stringify({
+      query,
+      type: searchType.value.join(','),
+    }),
+  }).then(res => res.json()).then(res => {
+    const err = res['error']
+    if (err) {
+      toast('検索に失敗しました: ' + err)
+      return
+    }
+    processResult(query, res)
+  })
+}
+
+function handleSearchInputEvent(event: any) {
+  history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL(event.target.value || '')}&types=${this.searchType.join(',')}`)
+  searchDebounced()
+}
+
+function toggleSearchType(type: string) {
+  if (searchType.value.includes(type)) {
+    searchType.value = searchType.value.filter(s => s !== type)
+  } else {
+    searchType.value.push(type)
+  }
+  history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL((document.getElementById('search') as HTMLInputElement).value || '')}&types=${this.searchType.join(',')}`)
+  search()
+}
+
+search()
+readSearchType()
+</script>
+
 <template>
   <Navbar
       :dismissible-login-modal="true"
@@ -32,7 +117,7 @@
         />
       </li>
     </ul>
-    <Dummy v-if="group === 'admin' && isSelected('users')">
+    <template v-if="group === 'admin' && isSelected('users')">
       <h2>ユーザー ({{ result.users.length }})</h2>
       <UserEntriesList>
         <UserEntry
@@ -46,7 +131,7 @@
             @click="redirectTo(`/admin/users?id=${p.id}`)"
         />
       </UserEntriesList>
-    </Dummy>
+    </template>
     <Dummy v-if="isSelected('players')">
       <h2>プレイヤー ({{ result.players.length }})</h2>
       <PlayerEntriesList>
@@ -83,82 +168,19 @@
 </template>
 
 <script lang="ts">
-import Navbar from '@/components/Navbar.vue'
-import Container from '@/components/Container.vue'
-import { api, toast } from '@/util/util'
+import Navbar from '@/components/NavBar.vue'
+import Container from '@/components/SpicyContainer.vue'
 import PunishmentEntriesList from '@/components/PunishmentEntriesList.vue'
 import PunishmentEntry from '@/components/PunishmentEntry.vue'
-import { ref } from 'vue'
 import PlayerEntriesList from '@/components/PlayerEntriesList.vue'
 import PlayerEntry from '@/components/PlayerEntry.vue'
-import Dummy from '@/components/Dummy.vue'
+import Dummy from '@/components/SDummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import UserEntriesList from '@/components/UserEntriesList.vue'
 import UserEntry from '@/components/UserEntry.vue'
+import {ref as refInScript} from "vue";
 
-const result = ref({
-  users: [],
-  players: [],
-  punishments: [],
-})
-
-function processResult(query: string, res: { users: any[], players: any[], punishments: any[] }) {
-  const lq = query.toLowerCase()
-  res.users = [
-    ...res.users.filter(p => p.username.toLowerCase() === lq || p.email.toLowerCase() === lq).map(p => {
-      p.exactMatch = true
-      return p
-    }),
-    ...res.users.filter(p => p.username.toLowerCase() !== lq && p.email.toLowerCase() !== lq),
-  ]
-  res.players = [
-    ...res.players.filter(p => p.name.toLowerCase() === lq || p.uuid.toLowerCase() === lq).map(p => {
-      p.exactMatch = true
-      return p
-    }),
-    ...res.players.filter(p => p.name.toLowerCase() !== lq && p.uuid.toLowerCase() !== lq),
-  ]
-  console.log(res)
-  result.value = res
-}
-
-const searchType = ref([ 'players', 'punishments' ])
-let previousSearchTimeout = 0
-
-function searchDebounced() {
-  if (previousSearchTimeout) clearTimeout(previousSearchTimeout)
-  previousSearchTimeout = setTimeout(() => search(), 250)
-}
-
-function search() {
-  const params = new URLSearchParams(window.location.search)
-  const query = params.get('q')
-  readSearchType()
-  if (!query) {
-    processResult('', { users: [], players: [], punishments: [] })
-    return
-  }
-  console.log(searchType.value)
-  fetch(api('/misc/search'), {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-SpicyAzisaBan-Session': localStorage.getItem('spicyazisaban_session'),
-    },
-    body: JSON.stringify({
-      query,
-      type: searchType.value.join(','),
-    }),
-  }).then(res => res.json()).then(res => {
-    const err = res['error']
-    if (err) {
-      toast('検索に失敗しました: ' + err)
-      return
-    }
-    processResult(query, res)
-  })
-}
+const searchType = refInScript([ 'players', 'punishments' ])
 
 function readSearchType() {
   const params = new URLSearchParams(window.location.search)
@@ -191,22 +213,12 @@ export default {
   },
   data() {
     return {
-      result,
       group: 'user',
     }
   },
   methods: {
     isSelected(type: string) {
       return searchType.value.includes(type)
-    },
-    toggleSearchType(type: string) {
-      if (searchType.value.includes(type)) {
-        searchType.value = searchType.value.filter(s => s !== type)
-      } else {
-        searchType.value.push(type)
-      }
-      history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL((document.getElementById('search') as HTMLInputElement).value || '')}&types=${this.searchType.join(',')}`)
-      search()
     },
     getSearchWord() {
       const params = new URLSearchParams(window.location.search)
@@ -215,21 +227,9 @@ export default {
     redirectTo(url: string) {
       location.href = url
     },
-    handleSearchInputEvent(event) {
-      history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL(event.target.value || '')}&types=${this.searchType.join(',')}`)
-      searchDebounced()
-    },
     onMeUpdated(me) {
       this.group = me.group
     },
-    search,
-  },
-  setup() {
-    search()
-    readSearchType()
-    return {
-      searchType,
-    }
   },
 }
 </script>

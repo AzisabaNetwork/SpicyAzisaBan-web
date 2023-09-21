@@ -14,7 +14,7 @@
               id="admin_username"
               white-text
               active-label
-              ref="admin_username"
+              refForRef="admin_username"
               pattern="^[a-zA-Z0-9_-]{4,32}$"
               :disabled="disableForm"
           />
@@ -27,7 +27,7 @@
               id="admin_email"
               white-text
               active-label
-              ref="admin_email"
+              refForRef="admin_email"
               :min-length="1"
               :disabled="disableForm"
           />
@@ -39,30 +39,29 @@
               :min-length="7"
               id="admin_new_password"
               white-text
-              ref="admin_new_password"
+              refForRef="admin_new_password"
               type="password"
               :disabled="disableForm"
           />
         </Card>
         <Card>
           <h2>グループ</h2>
-          <RadioButton ref="admin_group_user" name="group" text="ユーザー" value="user" />
-          <RadioButton ref="admin_group_manager" name="group" text="処罰管理者" value="manager" />
-          <RadioButton ref="admin_group_admin" name="group" text="管理者" value="admin" />
+          <RadioButton ref-for-ref="admin_group_user" name="group" text="ユーザー" value="user" />
+          <RadioButton ref-for-ref="admin_group_manager" name="group" text="処罰管理者" value="manager" />
+          <RadioButton ref-for-ref="admin_group_admin" name="group" text="管理者" value="admin" />
         </Card>
-        <Button text="保存" color="submit-button green" :disabled="disableForm" @click="updateUser" />
+        <v-btn text="保存" color="submit-button green" :disabled="disableForm" @click="updateUser" />
       </div>
     </div>
   </Container>
 </template>
 
 <script lang="ts">
-import Navbar from '@/components/Navbar.vue'
-import Container from '@/components/Container.vue'
-import Preloader from '@/components/Preloader.vue'
+import Navbar from '@/components/NavBar.vue'
+import Container from '@/components/SpicyContainer.vue'
+import Preloader from '@/components/SpicyPreloader.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import Button from '@/components/Button.vue'
-import Card from '@/components/Card.vue'
+import Card from '@/components/SpicyCard.vue'
 import RadioButton from '@/components/RadioButton.vue'
 import { api, toast } from '@/util/util'
 
@@ -70,7 +69,6 @@ export default {
   components: {
     RadioButton,
     Card,
-    Button,
     Preloader,
     Container,
     Navbar,

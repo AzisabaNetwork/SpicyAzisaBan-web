@@ -2,25 +2,23 @@
   <Navbar :dismissible-login-modal="showForm" />
   <Preloader size="big" :active="spinnerActive" color="spinner-blue-only" />
   <Container v-if="showForm">
-    <InputTextField id="username" ref="username" pattern="^[a-zA-Z0-9_-]{4,32}$" :min-length="4" :max-length="32" label="ユーザー名" :white-text="true" :disabled="disableForm" />
-    <Button text="ユーザー名を変更" type="submit" color="green" :disabled="disableForm" @click="onSubmit" />
+    <InputTextField id="username" refForRef="username" pattern="^[a-zA-Z0-9_-]{4,32}$" :min-length="4" :max-length="32" label="ユーザー名" :white-text="true" :disabled="disableForm" />
+    <v-btn text="ユーザー名を変更" type="submit" color="green" :disabled="disableForm" @click="onSubmit" />
   </Container>
 </template>
 
 <script lang="ts">
 import { ref } from "vue"
-import Navbar from '@/components/Navbar.vue'
-import Preloader from "@/components/Preloader.vue"
+import Navbar from '@/components/NavBar.vue'
+import Preloader from "@/components/SpicyPreloader.vue"
 import InputTextField from "@/components/InputTextField.vue"
-import Container from "@/components/Container.vue"
-import Button from "@/components/Button.vue";
+import Container from "@/components/SpicyContainer.vue"
 import {api, isValidName, toast} from '@/util/util'
 
 const disableForm = ref(false)
 
 export default {
   components: {
-    Button,
     Container,
     Preloader,
     Navbar,

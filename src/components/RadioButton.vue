@@ -8,7 +8,7 @@
           :disabled="disabled"
           style="margin: 2px;"
           :checked="checked"
-          :ref="ref"
+          :ref="refForRef"
           :value="value"
       />
       <span>{{ text }}</span>
@@ -28,7 +28,7 @@ export default {
     color: String,
     text: String,
     disabled: Boolean,
-    ref: String,
+    refForRef: String,
     defaultChecked: Boolean,
     value: String,
   },

@@ -6,7 +6,7 @@
       <div class="col s11" style="margin-left: 0">
         <FlippedTable>
           <FlippedTableEntry :ks="2" :vs="10" :k="targetType">
-            <InputTextField id="p-target" ref="target" white-text :label="targetType" active-label :disabled="disableForm" />
+            <InputTextField id="p-target" refForRef="target" white-text :label="targetType" active-label :disabled="disableForm" />
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="タイプ" vstyle="color: #fff;">
             <select id="p-type" @change="updateElements" :disabled="disableForm">
@@ -25,14 +25,14 @@
             </select>
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="理由">
-            <InputTextField id="p-reason" ref="reason" white-text label="理由" active-label />
+            <InputTextField id="p-reason" refForRef="reason" white-text label="理由" active-label />
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="期限切れ日時" v-if="isTemp">
             <InputTextField
                 id="end-date-picker"
                 input-class="datepicker"
                 label="期限切れ日時 (YYYY/MM/DD)"
-                ref="end-date-picker"
+                refForRef="end-date-picker"
                 active-label
                 white-text
                 @change="onEndDateTimeChange"
@@ -41,7 +41,7 @@
                 id="end-time-picker"
                 input-class="timepicker"
                 label="期限切れ日時 (hh:mm:ss)"
-                ref="end-time-picker"
+                refForRef="end-time-picker"
                 active-label
                 white-text
                 @change="onEndDateTimeChange"
@@ -51,7 +51,7 @@
             <InputTextField
                 id="duration"
                 label="期間"
-                ref="duration"
+                refForRef="duration"
                 active-label
                 white-text
                 :input-class="isInvalidDuration ? 'the-invalid' : null"
@@ -61,7 +61,7 @@
           <FlippedTableEntry :ks="2" :vs="10" k="サーバー">
             <InputTextField
                 id="p-server"
-                ref="server"
+                refForRef="server"
                 white-text
                 label="サーバー"
                 default-value="global"
@@ -72,7 +72,7 @@
             {{ operator }}
           </FlippedTableEntry>
         </FlippedTable>
-        <Button :disabled="disableForm" color="submit-button" text="送信" @click="doCreate" />
+        <v-btn :disabled="disableForm" color="submit-button" text="送信" @click="doCreate" />
       </div>
     </div>
   </Container>
@@ -80,13 +80,12 @@
 
 <script lang="ts">
 import { ref } from 'vue'
-import Navbar from '@/components/Navbar.vue'
-import Container from '@/components/Container.vue'
+import Navbar from '@/components/NavBar.vue'
+import Container from '@/components/SpicyContainer.vue'
 import FlippedTable from '@/components/FlippedTable.vue'
 import FlippedTableEntry from '@/components/FlippedTableEntry.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { api, autoInitM, processTime, toast, unProcessTime3, zero } from '@/util/util'
-import Button from '@/components/Button.vue'
 
 const operator = ref('')
 
@@ -94,7 +93,6 @@ const start = Date.now()
 
 export default {
   components: {
-    Button,
     FlippedTableEntry,
     FlippedTable,
     Container,

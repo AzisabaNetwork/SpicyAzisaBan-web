@@ -27,6 +27,7 @@ import PunishmentEntriesList from "@/components/PunishmentEntriesList.vue"
 import PunishmentEntry from "@/components/PunishmentEntry.vue"
 import Container from "@/components/SpicyContainer.vue"
 import { api, toast } from '@/util/util'
+import {VBtn} from "vuetify/components";
 
 const page = ref(0)
 const punishments = ref([])
@@ -41,6 +42,7 @@ export default {
     PunishmentEntry,
     PunishmentEntriesList,
     Navbar,
+    VBtn,
   },
   methods: {
     fetchMore() {

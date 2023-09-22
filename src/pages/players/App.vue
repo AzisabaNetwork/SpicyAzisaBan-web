@@ -114,6 +114,7 @@ import PunishmentEntry from '@/components/PunishmentEntry.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import PlayerEntriesList from '@/components/PlayerEntriesList.vue'
 import PlayerEntry from '@/components/PlayerEntry.vue'
+import {VBtn} from "vuetify/components";
 
 export default {
   components: {
@@ -126,6 +127,7 @@ export default {
     FlippedTable,
     Container,
     Navbar,
+    VBtn,
   },
   data() {
     return {

@@ -86,6 +86,7 @@ import FlippedTable from '@/components/FlippedTable.vue'
 import FlippedTableEntry from '@/components/FlippedTableEntry.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { api, autoInitM, processTime, toast, unProcessTime3, zero } from '@/util/util'
+import {VBtn} from "vuetify/components";
 
 const operator = ref('')
 
@@ -98,6 +99,7 @@ export default {
     Container,
     Navbar,
     InputTextField,
+    VBtn,
   },
   data() {
     return {

@@ -231,6 +231,7 @@ import { api, buildSearchURL, openModal, processTime, toast, unProcessTime3, zer
 import Modal from '@/components/SModal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
+import {VBtn} from "vuetify/components";
 
 const editing = ref(false)
 const isUpdatingData = ref(false)
@@ -256,6 +257,7 @@ export default {
     Preloader,
     Navbar,
     InputTextField,
+    VBtn,
   },
   data() {
     return {

@@ -64,6 +64,7 @@ import InputTextField from '@/components/InputTextField.vue'
 import Card from '@/components/SpicyCard.vue'
 import RadioButton from '@/components/RadioButton.vue'
 import { api, toast } from '@/util/util'
+import {VBtn} from "vuetify/components";
 
 export default {
   components: {
@@ -73,6 +74,7 @@ export default {
     Container,
     Navbar,
     InputTextField,
+    VBtn,
   },
   data() {
     return {

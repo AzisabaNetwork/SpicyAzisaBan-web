@@ -14,6 +14,7 @@ import Preloader from "@/components/SpicyPreloader.vue"
 import InputTextField from "@/components/InputTextField.vue"
 import Container from "@/components/SpicyContainer.vue"
 import {api, isValidName, toast} from '@/util/util'
+import {VBtn} from "vuetify/components";
 
 const disableForm = ref(false)
 
@@ -23,6 +24,7 @@ export default {
     Preloader,
     Navbar,
     InputTextField,
+    VBtn,
   },
   methods: {
     onSubmit() {

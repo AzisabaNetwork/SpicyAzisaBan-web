@@ -167,6 +167,7 @@ import Modal from '@/components/SModal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
 import Dummy from '@/components/SDummy.vue'
+import {VBtn} from "vuetify/components";
 
 const refCodes = ref([])
 
@@ -181,6 +182,7 @@ export default {
     Container,
     Navbar,
     InputTextField,
+    VBtn,
   },
   data() {
     return {

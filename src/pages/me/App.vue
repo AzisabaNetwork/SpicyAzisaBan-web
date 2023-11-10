@@ -8,50 +8,40 @@
           <h2>ユーザー名変更</h2>
           <v-text-field
               label="ユーザー名"
+              minlength="4"
+              maxlength="32"
+              :rules="[v => v.test(/^[a-zA-Z0-9_-]{4,32}$/) || 'Invalid username']"
+              v-model="username"
+              :readonly="disableForm"
           ></v-text-field>
-          <InputTextField
-              label="ユーザー名"
-              :min-length="4"
-              :max-length="32"
-              :default-value="me.username"
-              id="me_username"
-              white-text
-              active-label
-              refForRef="me_username"
-              pattern="^[a-zA-Z0-9_-]{4,32}$"
-              :disabled="disableForm"
-          />
           <v-btn text="変更" :disabled="disableForm" @click="changeName()" />
         </Card>
         <Card>
           <h2>パスワード変更</h2>
-          <InputTextField
+          <v-text-field
               label="現在のパスワード"
-              :min-length="7"
-              id="me_current_password"
-              white-text
-              refForRef="me_current_password"
+              minlength="7"
+              :rules="[v => v.length > 7 || 'パスワードは7文字以上である必要があります']"
+              v-model="currentPassword"
               type="password"
-              :disabled="disableForm"
-          />
-          <InputTextField
+              :readonly="disableForm"
+          ></v-text-field>
+          <v-text-field
               label="新しいパスワード"
-              :min-length="7"
-              id="me_new_password"
-              white-text
-              refForRef="me_new_password"
+              minlength="7"
+              :rules="[v => v.length > 7 || 'パスワードは7文字以上である必要があります']"
+              v-model="newPassword"
               type="password"
-              :disabled="disableForm"
-          />
-          <InputTextField
-              label="新しいパスワード (確認)"
-              :min-length="7"
-              id="me_new_password_confirm"
-              white-text
-              refForRef="me_new_password_confirm"
+              :readonly="disableForm"
+          ></v-text-field>
+          <v-text-field
+              label="新しいパスワード（確認）"
+              minlength="7"
+              :rules="[v => v.length > 7 || 'パスワードは7文字以上である必要があります']"
+              v-model="newPasswordConfirm"
               type="password"
-              :disabled="disableForm"
-          />
+              :readonly="disableForm"
+          ></v-text-field>
           <div class="col s12">
             <v-btn :disabled="disableForm" @click="changePassword()">変更</v-btn>
           </div>
@@ -62,16 +52,14 @@
             <div class='col s12'>
               <p>現在{{ me.mfa_enabled ? '有効' : '無効' }}になっています。</p>
             </div>
-            <InputTextField
+            <v-text-field
                 label="現在のパスワード"
-                :min-length="7"
-                id="me_mfa_password"
-                white-text
-                refForRef="me_mfa_password"
+                minlength="7"
+                :rules="[v => v.length > 7 || 'パスワードは7文字以上である必要があります']"
+                v-model="currentPassword"
                 type="password"
-                :disabled="disableForm"
-                v-if="!me.mfa_enabled"
-            />
+                :readonly="disableForm"
+            ></v-text-field>
             <div class='col s12'>
               <v-btn
                   type='submit'
@@ -160,23 +148,21 @@ import {onMounted, ref} from 'vue'
 import Navbar from '@/components/NavBar.vue'
 import Container from '@/components/SpicyContainer.vue'
 import Preloader from '@/components/SpicyPreloader.vue'
-import InputTextField from '@/components/InputTextField.vue'
 import { api, isValidName, openLoginModal, openModal, toast } from '@/util/util'
 import Card from '@/components/SpicyCard.vue'
 import Modal from '@/components/SModal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
 
-const me_username = ref(null)
 const navbar = ref(null)
-const me_current_password = ref(null)
-const me_new_password = ref(null)
-const me_new_password_confirm = ref(null)
-const me_mfa_password = ref(null)
 const me_mfa_modal_qrcode = ref(null)
 const me_mfa_modal_secret = ref(null)
 const me_link_account_code = ref(null)
 
+const username = ref('')
+const currentPassword = ref('')
+const newPassword = ref('')
+const newPasswordConfirm = ref('')
 const codes = ref([])
 const recoveryCodes = ref('')
 const disableForm = ref(true)
@@ -193,14 +179,13 @@ const me = ref({
 const onUserUpdated = (user: any) => {
   if (!user) return openLoginModal()
   me.value = user
-  me_username.value.value = user.username
+  username.value = user.username
   disableForm.value = false
 }
 
 const changeName = () => {
   if (disableForm.value) return
-  const username = me_username.value.value
-  if (!isValidName(username)) {
+  if (!isValidName(username.value)) {
     return toast('このユーザー名は使用できません。')
   }
   toast('パスワードを変更中...')
@@ -214,7 +199,7 @@ const changeName = () => {
     },
     body: JSON.stringify({
       user_id: navbar.value.user.id,
-      username,
+      username: username.value,
     }),
     credentials: 'include',
   }).then(res => res.json()).then(res => {
@@ -233,7 +218,7 @@ const changeName = () => {
     }
     toast('ユーザー名を変更しました。')
     setTimeout(() => {
-      navbar.value.username = username
+      navbar.value.username = username.value
     }, 100)
   }).finally(() => {
     disableForm.value = false
@@ -242,13 +227,11 @@ const changeName = () => {
 
 const changePassword = () => {
   if (disableForm.value) return
-  const currentPassword = me_current_password.value.value
-  const newPassword = me_new_password.value.value
-  if (currentPassword < 7) return
-  if (newPassword !== me_new_password_confirm.value.value) {
+  if (currentPassword.value.length < 7) return
+  if (newPassword.value !== newPasswordConfirm.value) {
     return toast('パスワード (確認)が一致しません。')
   }
-  if (newPassword.length < 7) {
+  if (newPassword.value.length < 7) {
     return toast('パスワードは7文字以上にする必要があります。')
   }
   disableForm.value = true
@@ -261,8 +244,8 @@ const changePassword = () => {
     },
     body: JSON.stringify({
       user_id: navbar.value.user.id,
-      currentPassword,
-      newPassword,
+      currentPassword: currentPassword.value,
+      newPassword: newPassword.value,
     }),
     credentials: 'include',
   }).then(res => res.json()).then(res => {
@@ -334,7 +317,6 @@ const toggleMFA = () => {
         disableForm.value = false
       })
     } else {
-      const password = me_mfa_password.value.value
       toast('2FAを有効にしています...')
       fetch(api('/i_users/enable_2fa'), {
         method: 'POST',
@@ -343,7 +325,7 @@ const toggleMFA = () => {
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
         },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password: currentPassword.value }),
         credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res.error

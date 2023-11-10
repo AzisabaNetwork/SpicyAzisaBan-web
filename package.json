@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@materializecss/materialize": "^1.1.0-alpha",
+    "@mdi/font": "^7.3.67",
     "core-js": "^3.32.2",
     "vue": "^3.3.4",
     "vue-class-component": "^7.2.6",

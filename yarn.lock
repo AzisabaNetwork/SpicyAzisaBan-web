@@ -1759,6 +1759,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mdi/font@npm:^7.3.67":
+  version: 7.3.67
+  resolution: "@mdi/font@npm:7.3.67"
+  checksum: 34af78e108b1cbf30760a062a0d4c25e58fb13b719cef535b96116c6f522f877f19448d4389dac87176bd3bbca240b9f721b1b01599f0b333311edbff5d2fba9
+  languageName: node
+  linkType: hard
+
 "@node-ipc/js-queue@npm:2.0.3":
   version: 2.0.3
   resolution: "@node-ipc/js-queue@npm:2.0.3"
@@ -8705,6 +8712,7 @@ __metadata:
   resolution: "spicyazisaban-web@workspace:."
   dependencies:
     "@materializecss/materialize": ^1.1.0-alpha
+    "@mdi/font": ^7.3.67
     "@typescript-eslint/eslint-plugin": ^6.7.2
     "@typescript-eslint/parser": ^6.7.2
     "@vue/cli-plugin-babel": ^5.0.8

@@ -140,7 +140,7 @@
       </div>
     </ModalContent>
     <ModalFooter>
-      <v-btn color="modal-close green" text="OK" />
+      <v-btn class="modal-close" color="green">OK</v-btn>
     </ModalFooter>
   </Modal>
   <Modal id="me_link_account" :dismissible="false">
@@ -150,7 +150,7 @@
       <p>このコードは10分間有効です。10分が過ぎると再度連携ボタンをクリックする必要があります。</p>
     </ModalContent>
     <ModalFooter>
-      <v-btn color="modal-close green" text="OK" @click="refreshUserStatus()" />
+      <v-btn color="modal-close green" @click="refreshUserStatus()">OK</v-btn>
     </ModalFooter>
   </Modal>
 </template>

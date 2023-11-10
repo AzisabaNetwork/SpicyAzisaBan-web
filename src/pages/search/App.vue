@@ -133,7 +133,7 @@ readSearchType()
         />
       </UserEntriesList>
     </template>
-    <Dummy v-if="isSelected('players')">
+    <template v-if="isSelected('players')">
       <h2>プレイヤー ({{ result.players.length }})</h2>
       <PlayerEntriesList>
         <PlayerEntry
@@ -146,8 +146,8 @@ readSearchType()
             :style="{ 'background-color': p.exactMatch ? 'rgba(0, 255, 0, 0.2)' : null }"
         />
       </PlayerEntriesList>
-    </Dummy>
-    <Dummy v-if="isSelected('punishments')">
+    </template>
+    <template v-if="isSelected('punishments')">
       <h2>処罰 ({{ result.punishments.length }})</h2>
       <PunishmentEntriesList>
         <PunishmentEntry
@@ -164,7 +164,7 @@ readSearchType()
             @click="redirectTo(`/punishments/view?id=${p.id}`)"
         />
       </PunishmentEntriesList>
-    </Dummy>
+    </template>
   </Container>
 </template>
 
@@ -175,7 +175,6 @@ import PunishmentEntriesList from '@/components/PunishmentEntriesList.vue'
 import PunishmentEntry from '@/components/PunishmentEntry.vue'
 import PlayerEntriesList from '@/components/PlayerEntriesList.vue'
 import PlayerEntry from '@/components/PlayerEntry.vue'
-import Dummy from '@/components/SDummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
 import UserEntriesList from '@/components/UserEntriesList.vue'
 import UserEntry from '@/components/UserEntry.vue'
@@ -204,7 +203,6 @@ export default {
     UserEntry,
     UserEntriesList,
     MdIcon,
-    Dummy,
     PlayerEntry,
     PlayerEntriesList,
     PunishmentEntry,

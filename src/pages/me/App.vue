@@ -6,6 +6,9 @@
       <div class="col s12">
         <Card>
           <h2>ユーザー名変更</h2>
+          <v-text-field
+              label="ユーザー名"
+          ></v-text-field>
           <InputTextField
               label="ユーザー名"
               :min-length="4"
@@ -50,7 +53,7 @@
               :disabled="disableForm"
           />
           <div class="col s12">
-            <Button text="変更" :disabled="disableForm" @click="changePassword()" />
+            <v-btn :disabled="disableForm" @click="changePassword()">変更</v-btn>
           </div>
         </Card>
         <Card>
@@ -70,54 +73,51 @@
                 v-if="!me.mfa_enabled"
             />
             <div class='col s12'>
-              <Button
+              <v-btn
                   type='submit'
-                  color='green submit-button'
+                  color='green'
+                  icon="mdi-submit"
                   @click='toggleMFA()'
-                  :text="me.mfa_enabled ? '無効化' : '有効化'"
                   :disabled="disableForm"
-              />
+              >{{ me.mfa_enabled ? '無効化' : '有効化' }} </v-btn>
             </div>
           </div>
         </Card>
         <Card>
           <h2>Minecraftアカウント連携</h2>
           <p>Minecraftアカウント連携: {{ me.linked_uuid ? 'オン' : 'オフ' }}</p>
-          <Dummy v-if="me.linked_uuid">
+          <template v-if="me.linked_uuid">
             <p>連携されているUUID: {{ me.linked_uuid }}</p>
             <p>連携されている名前: {{ me.linked_name }}</p>
-          </Dummy>
+          </template>
           <div class="col s12">
-            <Button
+            <v-btn
                 type='submit'
-                color="green submit-button"
+                color="green"
                 @click="toggleAccountLink()"
-                :text="me.linked_uuid ? '連携解除' : '連携'"
-                :disable="disableForm"
-            />
+                :disabled="disableForm"
+            >{{ me.linked_uuid ? '連携解除' : '連携' }}</v-btn>
           </div>
         </Card>
         <Card>
           <h2>アカウント連携</h2>
           <div class="col s12">
-            <Button
-                type='submit'
-                color="green submit-button"
-                @click="enableDiscord()"
-                text="Discordアカウントと連携"
-                :disable="disableForm"
+            <v-btn
                 v-if="!me.discord_user_tag"
-            />
-            <Dummy v-else>
+                type="submit"
+                color="green"
+                @click="enableDiscord()"
+                :disabled="disableForm"
+            >Discordアカウントと連携</v-btn>
+            <template v-else>
               <p>Discordアカウント: {{ me.discord_user_tag }} (ID: {{ me.discord_user_id }})</p>
-              <Button
+              <v-btn
                   type='submit'
-                  color="blue submit-button"
+                  color="blue"
                   @click="disableDiscord()"
-                  text="Discordアカウントの連携を解除"
-                  :disable="disableForm"
-              />
-            </Dummy>
+                  :disabled="disableForm"
+              >Discordアカウントの連携を解除</v-btn>
+            </template>
           </div>
         </Card>
       </div>
@@ -155,8 +155,8 @@
   </Modal>
 </template>
 
-<script lang="ts">
-import { ref } from 'vue'
+<script lang="ts" setup>
+import {onMounted, ref} from 'vue'
 import Navbar from '@/components/NavBar.vue'
 import Container from '@/components/SpicyContainer.vue'
 import Preloader from '@/components/SpicyPreloader.vue'
@@ -166,103 +166,184 @@ import Card from '@/components/SpicyCard.vue'
 import Modal from '@/components/SModal.vue'
 import ModalContent from '@/components/ModalContent.vue'
 import ModalFooter from '@/components/ModalFooter.vue'
-import Dummy from '@/components/SDummy.vue'
-import {VBtn} from "vuetify/components";
 
-const refCodes = ref([])
+const me_username = ref(null)
+const navbar = ref(null)
+const me_current_password = ref(null)
+const me_new_password = ref(null)
+const me_new_password_confirm = ref(null)
+const me_mfa_password = ref(null)
+const me_mfa_modal_qrcode = ref(null)
+const me_mfa_modal_secret = ref(null)
+const me_link_account_code = ref(null)
 
-export default {
-  components: {
-    Dummy,
-    ModalFooter,
-    ModalContent,
-    Modal,
-    Card,
-    Preloader,
-    Container,
-    Navbar,
-    InputTextField,
-    VBtn,
-  },
-  data() {
-    return {
-      disableForm: true,
-      me: {},
-    }
-  },
-  methods: {
-    onUserUpdated(user) {
-      if (!user) return openLoginModal()
-      this.me = user
-      this.$refs.me_username.value = user.username
-      this.disableForm = false
+const codes = ref([])
+const recoveryCodes = ref('')
+const disableForm = ref(true)
+const me = ref({
+  email: '',
+  username: '',
+  mfa_enabled: false,
+  linked_uuid: '',
+  linked_name: '',
+  discord_user_id: '',
+  discord_user_tag: '',
+})
+
+const onUserUpdated = (user: any) => {
+  if (!user) return openLoginModal()
+  me.value = user
+  me_username.value.value = user.username
+  disableForm.value = false
+}
+
+const changeName = () => {
+  if (disableForm.value) return
+  const username = me_username.value.value
+  if (!isValidName(username)) {
+    return toast('このユーザー名は使用できません。')
+  }
+  toast('パスワードを変更中...')
+  disableForm.value = true
+  fetch(api('/i_users/changename'), {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
     },
-    changeName() {
-      if (this.disableForm) return
-      const username = this.$refs.me_username.value
-      if (!isValidName(username)) {
-        return toast('このユーザー名は使用できません。')
+    body: JSON.stringify({
+      user_id: navbar.value.user.id,
+      username,
+    }),
+    credentials: 'include',
+  }).then(res => res.json()).then(res => {
+    const err = res.error
+    if (err) {
+      if (err === 'invalid') {
+        toast('このユーザー名は使用できません。')
+      } else if (err === 'already_taken') {
+        toast('このユーザー名はすでにほかの人に使用されています。')
+      } else if (err === 'invalid_user') {
+        toast('ユーザーが存在しません。')
+      } else {
+        toast(`不明なエラーが発生しました。 (${err})`)
       }
-      toast('パスワードを変更中...')
-      this.disableForm = true
-      fetch(api('/i_users/changename'), {
+      return
+    }
+    toast('ユーザー名を変更しました。')
+    setTimeout(() => {
+      navbar.value.username = username
+    }, 100)
+  }).finally(() => {
+    disableForm.value = false
+  })
+}
+
+const changePassword = () => {
+  if (disableForm.value) return
+  const currentPassword = me_current_password.value.value
+  const newPassword = me_new_password.value.value
+  if (currentPassword < 7) return
+  if (newPassword !== me_new_password_confirm.value.value) {
+    return toast('パスワード (確認)が一致しません。')
+  }
+  if (newPassword.length < 7) {
+    return toast('パスワードは7文字以上にする必要があります。')
+  }
+  disableForm.value = true
+  fetch(api('/i_users/changepassword'), {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+    },
+    body: JSON.stringify({
+      user_id: navbar.value.user.id,
+      currentPassword,
+      newPassword,
+    }),
+    credentials: 'include',
+  }).then(res => res.json()).then(res => {
+    const err = res.error
+    if (err) {
+      if (err === 'incorrect_password') {
+        toast('パスワードが間違っています。')
+      } else {
+        toast(`不明なエラーが発生しました。 (${err})`)
+      }
+      return
+    }
+    toast('パスワードを変更しました。')
+  }).finally(() => {
+    disableForm.value = false
+  })
+}
+
+const refreshUserStatus = async () => {
+  return await fetch(api('/i_users/me'), {
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+    },
+    credentials: 'include',
+  }).then(res => res.json()).then(res => {
+    if (res['error']) {
+      return
+    }
+    me.value = res
+    console.log(res)
+    return res
+  })
+}
+
+const toggleMFA = () => {
+  disableForm.value = true
+  refreshUserStatus().then(res => {
+    if (res.mfa_enabled) {
+      const token = prompt('現在の2FA認証コードもしくは復旧コード')
+      if (!token) {
+        disableForm.value = false
+        return
+      }
+      toast('2FAを無効にしています...')
+      fetch(api('/i_users/disable_2fa'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
         },
-        body: JSON.stringify({
-          user_id: this.$refs.navbar.user.id,
-          username,
-        }),
+        body: JSON.stringify({ token }),
         credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res.error
         if (err) {
-          if (err === 'invalid') {
-            toast('このユーザー名は使用できません。')
-          } else if (err === 'already_taken') {
-            toast('このユーザー名はすでにほかの人に使用されています。')
-          } else if (err === 'invalid_user') {
-            toast('ユーザーが存在しません。')
+          if (err === 'incorrect_mfa_token') {
+            toast('2FA認証コードが間違っています。')
           } else {
             toast(`不明なエラーが発生しました。 (${err})`)
           }
           return
         }
-        toast('ユーザー名を変更しました。')
-        setTimeout(() => {
-          this.$refs.navbar.username = username
-        }, 100)
+        toast('2FAを無効化しました。')
+        refreshUserStatus()
       }).finally(() => {
-        this.disableForm = false
+        disableForm.value = false
       })
-    },
-    changePassword() {
-      if (this.disableForm) return
-      const currentPassword = this.$refs.me_current_password.value
-      const newPassword = this.$refs.me_new_password.value
-      if (currentPassword < 7) return
-      if (newPassword !== this.$refs.me_new_password_confirm.value) {
-        return toast('パスワード (確認)が一致しません。')
-      }
-      if (newPassword.length < 7) {
-        return toast('パスワードは7文字以上にする必要があります。')
-      }
-      this.disableForm = true
-      fetch(api('/i_users/changepassword'), {
+    } else {
+      const password = me_mfa_password.value.value
+      toast('2FAを有効にしています...')
+      fetch(api('/i_users/enable_2fa'), {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
         },
-        body: JSON.stringify({
-          user_id: this.$refs.navbar.user.id,
-          currentPassword,
-          newPassword,
-        }),
+        body: JSON.stringify({ password }),
         credentials: 'include',
       }).then(res => res.json()).then(res => {
         const err = res.error
@@ -274,13 +355,39 @@ export default {
           }
           return
         }
-        toast('パスワードを変更しました。')
+        toast('2FAを有効化しました。')
+        refreshUserStatus()
+        showMFAModal(res.secret_key, res.recovery_codes, res.qrcode)
       }).finally(() => {
-        this.disableForm = false
+        disableForm.value = false
       })
-    },
-    refreshUserStatus() {
-      return fetch(api('/i_users/me'), {
+    }
+  })
+}
+
+const copyRC = () => {
+  navigator.clipboard.writeText(recoveryCodes.value)
+  toast('復旧コードをクリップボードにコピーしました。')
+}
+
+const showMFAModal = (key: string, codeArray: string[], qrcode: string) => {
+  recoveryCodes.value = `SpicyAzisaBan (${me.value.email}) のMFA復旧コード
+発行日時: ${new Date().toLocaleString('ja-JP')}
+
+・${codeArray.join('\n・')}`
+  codes.value = codeArray
+  me_mfa_modal_qrcode.value.src = qrcode
+  me_mfa_modal_secret.value.textContent = key
+  openModal(document.getElementById('me_mfa_modal'))
+}
+
+const toggleAccountLink = () => {
+  disableForm.value = true
+  refreshUserStatus().then(me => {
+    if (me.linked_uuid) {
+      // unlink
+      fetch(api('/i_users/unlink_account'), {
+        method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
@@ -289,183 +396,80 @@ export default {
         credentials: 'include',
       }).then(res => res.json()).then(res => {
         if (res['error']) {
+          toast('不明なエラーが発生しました: ' + res['error'])
           return
         }
-        this.me = res
+        refreshUserStatus()
+        toast('連携を解除しました。')
+      }).finally(() => disableForm.value = false)
+    } else {
+      // link
+      fetch(api('/i_users/link_account'), {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+        },
+        credentials: 'include',
+      }).then(res => res.json()).then(res => {
         console.log(res)
-        return res
-      })
-    },
-    toggleMFA() {
-      this.disableForm = true
-      this.refreshUserStatus().then(res => {
-        if (res.mfa_enabled) {
-          const token = prompt('現在の2FA認証コードもしくは復旧コード')
-          if (!token) return this.disableForm = false
-          toast('2FAを無効にしています...')
-          fetch(api('/i_users/disable_2fa'), {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
-            },
-            body: JSON.stringify({ token }),
-            credentials: 'include',
-          }).then(res => res.json()).then(res => {
-            const err = res.error
-            if (err) {
-              if (err === 'incorrect_mfa_token') {
-                toast('2FA認証コードが間違っています。')
-              } else {
-                toast(`不明なエラーが発生しました。 (${err})`)
-              }
-              return
-            }
-            toast('2FAを無効化しました。')
-            this.refreshUserStatus()
-          }).finally(() => {
-            this.disableForm = false
-          })
-        } else {
-          const password = this.$refs.me_mfa_password.value
-          toast('2FAを有効にしています...')
-          fetch(api('/i_users/enable_2fa'), {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
-            },
-            body: JSON.stringify({ password }),
-            credentials: 'include',
-          }).then(res => res.json()).then(res => {
-            const err = res.error
-            if (err) {
-              if (err === 'incorrect_password') {
-                toast('パスワードが間違っています。')
-              } else {
-                toast(`不明なエラーが発生しました。 (${err})`)
-              }
-              return
-            }
-            toast('2FAを有効化しました。')
-            this.refreshUserStatus()
-            this.showMFAModal(res.secret_key, res.recovery_codes, res.qrcode)
-          }).finally(() => {
-            this.disableForm = false
-          })
+        if (res['error']) {
+          const error = res['error']
+          if (error === 'already_linked') {
+            toast('アカウントはすでに連携されています。')
+          } else {
+            toast('不明なエラーが発生しました: ' + error)
+          }
+          return
         }
-      })
-    },
-    copyRC() {
-      navigator.clipboard.writeText(this.recoveryCodes)
-      toast('復旧コードをクリップボードにコピーしました。')
-    },
-    showMFAModal(key: string, codes: string[], qrcode: string) {
-      this.recoveryCodes = `SpicyAzisaBan (${this.me.email}) のMFA復旧コード
-発行日時: ${new Date().toLocaleString('ja-JP')}
-
-・${codes.join('\n・')}`
-      refCodes.value = codes
-      this.$refs.me_mfa_modal_qrcode.src = qrcode
-      this.$refs.me_mfa_modal_secret.textContent = key
-      openModal(document.getElementById('me_mfa_modal'))
-    },
-    toggleAccountLink() {
-      this.disableForm = true
-      this.refreshUserStatus().then(me => {
-        if (me.linked_uuid) {
-          // unlink
-          fetch(api('/i_users/unlink_account'), {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
-            },
-            credentials: 'include',
-          }).then(res => res.json()).then(res => {
-            if (res['error']) {
-              toast('不明なエラーが発生しました: ' + res['error'])
-              return
-            }
-            this.refreshUserStatus()
-            toast('連携を解除しました。')
-          }).finally(() => this.disableForm = false)
-        } else {
-          // link
-          fetch(api('/i_users/link_account'), {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
-            },
-            credentials: 'include',
-          }).then(res => res.json()).then(res => {
-            console.log(res)
-            if (res['error']) {
-              const error = res['error']
-              if (error === 'already_linked') {
-                toast('アカウントはすでに連携されています。')
-              } else {
-                toast('不明なエラーが発生しました: ' + error)
-              }
-              return
-            }
-            const code = res['link_code']
-            this.$refs.me_link_account_code.textContent = `/sab link ${code}`
-            openModal(document.getElementById('me_link_account'))
-          }).finally(() => this.disableForm = false)
-        }
-      })
-    },
-    enableDiscord() {
-      this.disableForm = true
-      fetch(api(`/api/oauth2/discord/get_url?for=link&apiRoot=${encodeURIComponent(api(''))}`), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
-        },
-        credentials: 'include',
-      }).then(res => res.json()).then(res => {
-        if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
-        location.href = res['url']
-      }).finally(() => this.disableForm = false)
-    },
-    disableDiscord() {
-      this.disableForm = true
-      fetch(api('/i_users/unlink_discord'), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
-        },
-        credentials: 'include',
-      }).then(res => res.json()).then(res => {
-        if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
-        this.refreshUserStatus()
-      }).finally(() => this.disableForm = false)
+        const code = res['link_code']
+        me_link_account_code.value.textContent = `/sab link ${code}`
+        openModal(document.getElementById('me_link_account'))
+      }).finally(() => disableForm.value = false)
     }
-  },
-  setup() {
-    return {
-      recoveryCodes: '',
-      codes: refCodes,
-    }
-  },
-  mounted() {
-    const params = new URLSearchParams(location.search)
-    if (params.has('state')) {
-      localStorage.setItem('spicyazisaban_session', params.get('state'))
-      location.href = location.origin + '/me'
-    }
-  },
+  })
 }
+
+const enableDiscord = () => {
+  disableForm.value = true
+  fetch(api(`/api/oauth2/discord/get_url?for=link&apiRoot=${encodeURIComponent(api(''))}`), {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+    },
+    credentials: 'include',
+  }).then(res => res.json()).then(res => {
+    if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
+    location.href = res['url']
+  }).finally(() => disableForm.value = false)
+}
+
+const disableDiscord = () => {
+  disableForm.value = true
+  fetch(api('/i_users/unlink_discord'), {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'X-SpicyAzisaBan-Session': localStorage.getItem("spicyazisaban_session"),
+    },
+    credentials: 'include',
+  }).then(res => res.json()).then(res => {
+    if (res['error']) return toast('不明なエラーが発生しました: ' + res['error'])
+    refreshUserStatus()
+  }).finally(() => disableForm.value = false)
+}
+
+onMounted(() => {
+  const params = new URLSearchParams(location.search)
+  if (params.has('state')) {
+    localStorage.setItem('spicyazisaban_session', params.get('state'))
+    location.href = location.origin + '/me'
+  }
+})
 </script>
 
 <style>

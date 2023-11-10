@@ -30,9 +30,9 @@
               <a onclick="M.Modal.getInstance(document.getElementById('login-modal')).open()" class="flex-center">ログイン<i
                   class="material-icons" style="color: #0f0; margin-left: 10px;">login</i></a>
             </li>
-            <Dummy v-if="loggedIn">
+            <template v-if="loggedIn">
               <slot name="common"/>
-            </Dummy>
+            </template>
             <li v-show="loggedIn">
               <DropdownTrigger :text="username || 'SpicyAzisaBan'" target="account-menu"/>
             </li>
@@ -46,17 +46,16 @@
       <a onclick="M.Modal.getInstance(document.getElementById('login-modal')).open()" class="flex-center">ログイン<i
           class="material-icons" style="color: #0f0; margin-left: 10px;">login</i></a>
     </li>
-    <Dummy v-if="loggedIn">
+    <template v-if="loggedIn">
       <slot name="common"/>
       <slot name="menu"/>
-    </Dummy>
+    </template>
   </ul>
 </template>
 
 <script lang="ts">
 import DropdownTrigger from '@/components/DropdownTrigger.vue'
 import InputTextField from '@/components/InputTextField.vue'
-import Dummy from '@/components/SDummy.vue'
 
 const enterKeyListener = (e: KeyboardEvent) => {
   if (e.key !== 'Enter') return
@@ -67,7 +66,6 @@ const enterKeyListener = (e: KeyboardEvent) => {
 
 export default {
   components: {
-    Dummy,
     DropdownTrigger,
     InputTextField,
   },

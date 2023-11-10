@@ -22,13 +22,13 @@
           <FlippedTableEntry :ks="2" :vs="10" k="タイプ"><PunishmentType :type="punishment.type" /></FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="理由">
             <InputTextField v-if="editing" id="p-reason" refForRef="reason" white-text label="理由" :default-value="punishment.reason" active-label />
-            <Dummy v-else>{{ punishment.reason }}</Dummy>
+            <template v-else>{{ punishment.reason }}</template>
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="処罰日時" :v="new Date(punishment.start).toLocaleString('ja-JP')" />
           <FlippedTableEntry :ks="2" :vs="10" k="有効"><ColoredBoolean :bool="punishment.active" /></FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="期限切れ" v-if="punishment.end > 0 && isTemp()"><ColoredBoolean :bool="punishment.end < Date.now()" /></FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="期限切れ日時" v-if="punishment.end > 0">
-            <Dummy v-if="isTemp() && editing">
+            <template v-if="isTemp() && editing">
               <label @click="refreshDateTimePickers">
                 <input class="filled-in white-text" type="checkbox" v-model="isPerm" :value="punishment.end <= 0" />
                 <span>無期限</span>
@@ -55,11 +55,11 @@
                   white-text
                   @change="onEndDateTimeChange"
               />
-            </Dummy>
-            <Dummy v-else>{{ new Date(punishment.end).toLocaleString('ja-JP') }}</Dummy>
+            </template>
+            <template v-else>{{ new Date(punishment.end).toLocaleString('ja-JP') }}</template>
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="期間">
-            <Dummy v-if="isTemp() && editing">
+            <template v-if="isTemp() && editing">
               <InputTextField
                   v-if="!isPerm"
                   id="duration"
@@ -71,8 +71,8 @@
                   :input-class="isInvalidDuration ? 'the-invalid' : null"
                   @change="onDurationChange"
               />
-              <Dummy v-else>無期限</Dummy>
-            </Dummy>
+              <template v-else>無期限</template>
+            </template>
             <NumberToTime v-else :time="punishment.end - punishment.start" />
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="サーバー">
@@ -85,11 +85,11 @@
                 :default-value="punishment.server"
                 active-label
             />
-            <Dummy v-else>{{ punishment.server }}</Dummy>
+            <template v-else>{{ punishment.server }}</template>
           </FlippedTableEntry>
           <FlippedTableEntry :ks="2" :vs="10" k="執行者" :v="punishment['operator_name']" />
           <FlippedTableEntry :ks="2" :vs="10" k="解除済み"><ColoredBoolean :bool="punishment.unpunished" /></FlippedTableEntry>
-          <Dummy v-if="punishment.unpunished">
+          <template v-if="punishment.unpunished">
             <FlippedTableEntry :ks="2" :vs="10" k="解除理由">
               <InputTextField
                 v-if="editing"
@@ -100,11 +100,11 @@
                 :default-value="punishment.unpunish.reason"
                 active-label
               />
-              <Dummy v-else>{{ punishment.unpunish.reason }}</Dummy>
+              <template v-else>{{ punishment.unpunish.reason }}</template>
             </FlippedTableEntry>
             <FlippedTableEntry :ks="2" :vs="10" k="解除日時" :v="new Date(punishment.unpunish.timestamp).toLocaleString('ja-JP')" />
             <FlippedTableEntry :ks="2" :vs="10" k="解除した人" :v="punishment.unpunish.operator_name" />
-          </Dummy>
+          </template>
         </FlippedTable>
       </div>
       <div class="col s1">
@@ -144,7 +144,7 @@
     <div class="row">
       <FlippedTable style="width: 100%">
         <FlippedTableEntry v-for="proof in punishment.proofs" :key="proof.id" :ks="1" :vs="11" :k="(proof.public ? 'P' : '') + '#' + proof.id" vc="left full-width text-align-left">
-          <Dummy v-if="editing">
+          <template v-if="editing">
             <div class="row" style="align-items: center; margin: 0;">
               <div class="col s10">
                 <div class="input-field col12">
@@ -172,12 +172,16 @@
                 </SLink>
               </div>
             </div>
-          </Dummy>
-          <Dummy v-else>
-            <MdImage v-if="/\.(png|gif|jpg|jpeg)$/.test(proof.text)" :src="proof.text" style="max-width: 90%; max-height: 90%;" />
+          </template>
+          <template v-else>
+            <v-img
+                v-if="/\.(png|gif|jpg|jpeg)$/.test(proof.text)"
+                :src="proof.text"
+                style="max-width: 90%; max-height: 90%;"
+            ></v-img>
             <SLink v-else-if="proof.text.startsWith('http://') || proof.text.startsWith('https://')" :href="proof.text">{{ proof.text }}</SLink>
-            <Dummy v-else>{{ proof.text }}</Dummy>
-          </Dummy>
+            <template v-else>{{ proof.text }}</template>
+          </template>
         </FlippedTableEntry>
         <FlippedTableEntry k="" vc="left full-width text-align-left" v-if="editing" :ks="1" :vs="11">
           <div class="row" style="align-items: center; margin: 0; height: 50px;">
@@ -223,9 +227,7 @@ import SLink from '@/components/SLink.vue'
 import PunishmentType from '@/components/PunishmentType.vue'
 import NumberToTime from '@/components/NumberToTime.vue'
 import ColoredBoolean from '@/components/ColoredBoolean.vue'
-import Dummy from '@/components/SDummy.vue'
 import MdIcon from '@/components/MdIcon.vue'
-import MdImage from '@/components/MdImage.vue'
 import InputTextField from '@/components/InputTextField.vue'
 import { api, buildSearchURL, openModal, processTime, toast, unProcessTime3, zero } from '@/util/util'
 import Modal from '@/components/SModal.vue'
@@ -244,9 +246,7 @@ export default {
     ModalFooter,
     ModalContent,
     Modal,
-    MdImage,
     MdIcon,
-    Dummy,
     ColoredBoolean,
     NumberToTime,
     PunishmentType,

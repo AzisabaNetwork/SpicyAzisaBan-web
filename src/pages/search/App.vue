@@ -66,7 +66,7 @@ function search() {
 }
 
 function handleSearchInputEvent(event: any) {
-  history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL(event.target.value || '')}&types=${this.searchType.join(',')}`)
+  history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL(event.target.value || '')}&types=${searchType.join(',')}`)
   searchDebounced()
 }
 
@@ -76,7 +76,7 @@ function toggleSearchType(type: string) {
   } else {
     searchType.value.push(type)
   }
-  history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL((document.getElementById('search') as HTMLInputElement).value || '')}&types=${this.searchType.join(',')}`)
+  history.replaceState({}, document.title, `${location.origin}/search?q=${queryToURL((document.getElementById('search') as HTMLInputElement).value || '')}&types=${searchType.join(',')}`)
   search()
 }
 
